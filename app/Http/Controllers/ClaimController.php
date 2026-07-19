@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Claim;
+use App\Models\Item;
 use App\Services\FinditPlsqlService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -16,7 +17,7 @@ class ClaimController extends Controller
         protected FinditPlsqlService $plsql
     ) {}
 
-    public function store(Request $request, int $id): RedirectResponse
+    public function store(Request $request, Item $item): RedirectResponse
     {
         $data = $request->validate([
             'claim_message' => ['nullable', 'string', 'max:500'],
@@ -25,8 +26,8 @@ class ClaimController extends Controller
 
         try {
             $this->plsql->submitClaim(
-                $id,
-                (int) Auth::guard('web')->id(),
+                (int) $item->item_id,
+                (int) Auth::id(),
                 $data['claim_message'] ?? null,
                 $data['proof_description'] ?? null
             );
@@ -34,20 +35,16 @@ class ClaimController extends Controller
             return back()->withErrors(['claim_message' => $e->getMessage()]);
         }
 
-        return redirect()->route('claims.mine')->with('success', 'Claim submitted successfully.');
+        return redirect()->route('claims.mine')->with('success', 'Your claim has been submitted for review.');
     }
 
     public function myClaims(): View
     {
-        $userId = Auth::guard('web')->id();
-
-        $claims = DB::select("
-            SELECT c.*, i.item_name, i.item_type, i.status AS item_status
-            FROM claims c
-            JOIN items i ON i.item_id = c.item_id
-            WHERE c.user_id = :user_id
-            ORDER BY c.created_at DESC
-        ", ['user_id' => $userId]);
+        $claims = Claim::query()
+            ->with('item')
+            ->where('user_id', Auth::id())
+            ->latest('created_at')
+            ->get();
 
         return view('claims.mine', compact('claims'));
     }

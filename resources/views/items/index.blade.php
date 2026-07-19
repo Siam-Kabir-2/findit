@@ -11,9 +11,30 @@
                 <h2>Browse lost & found</h2>
                 <p>Filter by name, type, status, category, or location.</p>
             </div>
-            @auth('web')
+            @auth
                 <a href="{{ route('items.create') }}" class="btn btn-accent">Report item</a>
             @endauth
+        </div>
+
+        <div class="toolbar">
+            <div class="filter-chips" role="group" aria-label="Board density">
+                <form method="POST" action="{{ route('preferences.board-view') }}" style="display:inline;">
+                    @csrf
+                    <input type="hidden" name="board_view" value="comfortable">
+                    <button type="submit" class="chip {{ ($boardView ?? 'comfortable') === 'comfortable' ? 'active' : '' }}">Comfortable</button>
+                </form>
+                <form method="POST" action="{{ route('preferences.board-view') }}" style="display:inline;">
+                    @csrf
+                    <input type="hidden" name="board_view" value="compact">
+                    <button type="submit" class="chip {{ ($boardView ?? '') === 'compact' ? 'active' : '' }}">Compact</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="filter-chips" role="group" aria-label="Quick type filters">
+            <a href="{{ route('items.index') }}" class="chip {{ !request('type') ? 'active' : '' }}">All</a>
+            <a href="{{ route('items.index', array_merge(request()->except('page'), ['type' => 'LOST'])) }}" class="chip {{ request('type') === 'LOST' ? 'active' : '' }}">Lost</a>
+            <a href="{{ route('items.index', array_merge(request()->except('page'), ['type' => 'FOUND'])) }}" class="chip {{ request('type') === 'FOUND' ? 'active' : '' }}">Found</a>
         </div>
 
         <form method="GET" action="{{ route('items.index') }}" class="filters">
@@ -61,18 +82,18 @@
 
         @if(request()->hasAny(['q','type','status','category_id','location_id']))
             <div class="toolbar">
-                <p class="meta">{{ count($items) }} result{{ count($items) === 1 ? '' : 's' }}</p>
+                <p class="meta">{{ $items->count() }} result{{ $items->count() === 1 ? '' : 's' }}</p>
                 <a href="{{ route('items.index') }}" class="btn btn-ghost btn-sm">Clear filters</a>
             </div>
         @endif
 
-        @if(count($items))
-            <div class="item-grid">
+        @if($items->count())
+            <div class="item-grid {{ ($boardView ?? 'comfortable') === 'compact' ? 'item-grid-compact' : '' }}">
                 @foreach($items as $item)
-                    <a href="{{ route('items.show', $item->item_id) }}" class="item-tile reveal">
+                    <a href="{{ route('items.show', $item) }}" class="item-tile reveal">
                         <div class="item-media">
                             @if(!empty($item->item_image))
-                                <img src="{{ asset('storage/'.$item->item_image) }}" alt="{{ $item->item_name }}">
+                                <img src="{{ asset('storage/'.$item->item_image) }}" alt="{{ $item->item_name }}" loading="lazy">
                             @endif
                         </div>
                         <div class="item-body">
@@ -81,8 +102,8 @@
                                 <span class="badge badge-{{ strtolower($item->status) }}">{{ $item->status }}</span>
                             </div>
                             <h3>{{ $item->item_name }}</h3>
-                            <div class="meta">{{ $item->category_name }} · {{ $item->location_name }}</div>
-                            <div class="meta">Posted by {{ $item->user_name }}</div>
+                            <div class="meta">{{ $item->category->category_name }} · {{ $item->location->location_name }}</div>
+                            <div class="meta">Posted by {{ $item->user->name }}</div>
                         </div>
                     </a>
                 @endforeach

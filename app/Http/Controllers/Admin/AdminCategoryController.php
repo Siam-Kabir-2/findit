@@ -46,6 +46,6 @@ class AdminCategoryController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
 
-        return back()->with('success', 'Category deleted.');
+        return back()->with('success', 'Category removed.');
     }
 }

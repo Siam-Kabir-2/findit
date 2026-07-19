@@ -14,7 +14,7 @@
             <div>
                 <span class="eyebrow">New listing</span>
                 <h2>Report an item</h2>
-                <p>Stored through Oracle PL/SQL <code>findit_pkg.add_item</code>.</p>
+                <p>Add details and an optional photo so others can match it quickly.</p>
             </div>
         </div>
         <form method="POST" action="{{ route('items.store') }}" enctype="multipart/form-data" class="panel form-grid">

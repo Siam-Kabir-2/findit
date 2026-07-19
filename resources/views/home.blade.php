@@ -10,7 +10,7 @@
         <p class="hero-copy">A precise board for reporting, searching, and verifying lost & found items across campus.</p>
         <div class="hero-actions">
             <a href="{{ route('items.index') }}" class="btn btn-accent">Browse board</a>
-            @auth('web')
+            @auth
                 <a href="{{ route('items.create') }}" class="btn btn-ghost">Report item</a>
             @else
                 <a href="{{ route('register') }}" class="btn btn-ghost">Create account</a>
@@ -40,7 +40,7 @@
             <div class="benefit">
                 <span class="benefit-num">03 — Claim</span>
                 <h3>Verify ownership</h3>
-                <p>Submit proof. Admins decide through Oracle PL/SQL.</p>
+                <p>Submit proof. Admins decide through the claim workflow.</p>
             </div>
         </div>
     </div>
@@ -57,13 +57,13 @@
             <a href="{{ route('items.index') }}" class="btn btn-ghost btn-sm">View all</a>
         </div>
 
-        @if(count($recentItems))
+        @if($recentItems->count())
             <div class="item-grid">
                 @foreach($recentItems as $item)
-                    <a href="{{ route('items.show', $item->item_id) }}" class="item-tile reveal">
+                    <a href="{{ route('items.show', $item) }}" class="item-tile reveal">
                         <div class="item-media">
                             @if(!empty($item->item_image))
-                                <img src="{{ asset('storage/'.$item->item_image) }}" alt="{{ $item->item_name }}">
+                                <img src="{{ asset('storage/'.$item->item_image) }}" alt="{{ $item->item_name }}" loading="lazy">
                             @endif
                         </div>
                         <div class="item-body">
@@ -72,7 +72,7 @@
                                 <span class="badge badge-{{ strtolower($item->status) }}">{{ $item->status }}</span>
                             </div>
                             <h3>{{ $item->item_name }}</h3>
-                            <div class="meta">{{ $item->category_name }} · {{ $item->location_name }}</div>
+                            <div class="meta">{{ $item->category->category_name }} · {{ $item->location->location_name }}</div>
                         </div>
                     </a>
                 @endforeach
@@ -88,7 +88,7 @@
         <h2>Ready when something goes missing.</h2>
         <p>Join FindIt and keep campus recovery organized, verified, and fast.</p>
     </div>
-    @auth('web')
+    @auth
         <a href="{{ route('items.create') }}" class="btn btn-accent">Report an item</a>
     @else
         <a href="{{ route('register') }}" class="btn btn-accent">Get started</a>

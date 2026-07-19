@@ -1,7 +1,7 @@
--- FINDIT - Triggers + PL/SQL Package (Oracle 11g)
--- Run as FINDIT user after tables exist.
+-- FindIt: triggers and PL/SQL package
+-- Run as findit user after tables are created.
 
-/* ===================== SEQUENCE TRIGGERS ===================== */
+-- Auto ID on insert
 
 CREATE OR REPLACE TRIGGER trg_users_bi
 BEFORE INSERT ON users
@@ -79,7 +79,7 @@ BEGIN
 END;
 /
 
-/* ===================== AUDIT TRIGGERS ===================== */
+-- Write changes to audit_logs
 
 CREATE OR REPLACE TRIGGER trg_items_audit
 AFTER INSERT OR UPDATE OR DELETE ON items
@@ -115,7 +115,7 @@ BEGIN
 END;
 /
 
-/* ===================== PACKAGE SPEC ===================== */
+-- Package header
 
 CREATE OR REPLACE PACKAGE findit_pkg AS
   PROCEDURE register_user(
@@ -187,7 +187,7 @@ CREATE OR REPLACE PACKAGE findit_pkg AS
 END findit_pkg;
 /
 
-/* ===================== PACKAGE BODY ===================== */
+-- Package body
 
 CREATE OR REPLACE PACKAGE BODY findit_pkg AS
 
@@ -313,7 +313,7 @@ CREATE OR REPLACE PACKAGE BODY findit_pkg AS
 
     UPDATE claims SET claim_status = 'APPROVED' WHERE claim_id = p_claim_id;
 
-    -- Reject other pending claims on same item
+    -- Reject other pending claims for this item
     UPDATE claims
     SET claim_status = 'REJECTED'
     WHERE item_id = v_item_id

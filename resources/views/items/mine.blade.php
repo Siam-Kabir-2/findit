@@ -11,10 +11,12 @@
                 <h2>My items</h2>
                 <p>Everything you have reported on FindIt.</p>
             </div>
-            <a href="{{ route('items.create') }}" class="btn btn-accent">Report new</a>
+            @can('create', App\Models\Item::class)
+                <a href="{{ route('items.create') }}" class="btn btn-accent">Report new</a>
+            @endcan
         </div>
 
-        @if(count($items))
+        @if($items->count())
             <div class="panel table-wrap">
                 <table class="data">
                     <thead>
@@ -30,17 +32,24 @@
                     <tbody>
                     @foreach($items as $item)
                         <tr>
-                            <td><a href="{{ route('items.show', $item->item_id) }}">{{ $item->item_name }}</a></td>
+                            <td><a href="{{ route('items.show', $item) }}">{{ $item->item_name }}</a></td>
                             <td><span class="badge {{ strtolower($item->item_type)==='lost' ? 'badge-lost' : 'badge-found' }}">{{ $item->item_type }}</span></td>
-                            <td>{{ $item->category_name }}</td>
-                            <td>{{ $item->location_name }}</td>
+                            <td>{{ $item->category->category_name }}</td>
+                            <td>{{ $item->location->location_name }}</td>
                             <td><span class="badge badge-{{ strtolower($item->status) }}">{{ $item->status }}</span></td>
                             <td>
-                                <form method="POST" action="{{ route('items.destroy', $item->item_id) }}" onsubmit="return confirm('Delete this item?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-danger btn-sm" type="submit">Delete</button>
-                                </form>
+                                <div class="actions-inline">
+                                    @can('update', $item)
+                                        <a href="{{ route('items.edit', $item) }}" class="btn btn-ghost btn-sm">Edit</a>
+                                    @endcan
+                                    @can('delete', $item)
+                                        <form method="POST" action="{{ route('items.destroy', $item) }}" onsubmit="return confirm('Delete this item?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                                        </form>
+                                    @endcan
+                                </div>
                             </td>
                         </tr>
                     @endforeach

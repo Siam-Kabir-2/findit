@@ -1,3 +1,4 @@
+-- Create findit schema user (run as SYSTEM)
 CONNECT SYSTEM/2022;
 CREATE USER findit IDENTIFIED BY 106;
 GRANT CONNECT TO findit;

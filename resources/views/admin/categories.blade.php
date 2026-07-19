@@ -12,7 +12,7 @@
             <label for="category_name">Name</label>
             <input id="category_name" name="category_name" value="{{ old('category_name') }}" required>
         </div>
-        <button class="btn btn-primary" type="submit">Add via PL/SQL</button>
+        <button class="btn btn-primary" type="submit">Add category</button>
     </form>
 
     <div class="panel table-wrap">

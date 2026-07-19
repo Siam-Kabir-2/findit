@@ -26,6 +26,19 @@ document.addEventListener('DOMContentLoaded', () => {
         toggle.addEventListener('click', () => {
             const open = mobileNav.classList.toggle('open');
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
         });
     }
+
+    document.querySelectorAll('[data-alert-dismiss]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const alert = btn.closest('[data-alert]');
+            if (! alert) {
+                return;
+            }
+            alert.style.transition = 'opacity 180ms ease';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 200);
+        });
+    });
 });

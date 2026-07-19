@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FindIt — Project Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #f8fafc;
+      --ink: #0f172a;
+      --muted: #475569;
+      --teal: #0d9488;
+      --teal-soft: #ccfbf1;
+      --line: #e2e8f0;
+      --accent: #134e4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: #020617; color: var(--ink); font-family: "Work Sans", system-ui, sans-serif; }
+    .deck { position: relative; width: 100vw; height: 100vh; }
+    .slide {
+      display: none; position: absolute; inset: 0;
+      padding: 3.2vh 4.5vw 7vh;
+      background:
+        radial-gradient(1200px 600px at 100% 0%, rgba(13,148,136,.08), transparent 55%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      overflow: auto;
+    }
+    .slide.active { display: flex; flex-direction: column; animation: in .28s ease; }
+    .slide.dark {
+      background:
+        radial-gradient(900px 500px at 10% 10%, rgba(13,148,136,.25), transparent 50%),
+        linear-gradient(145deg, #0b1220 0%, #0f172a 55%, #134e4a 140%);
+      color: #f8fafc;
+    }
+    .slide.dark .muted { color: #94a3b8; }
+    .slide.dark .chip { background: rgba(255,255,255,.08); color: #99f6e4; border-color: rgba(255,255,255,.12); }
+    @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    h1, h2, h3 { font-family: Outfit, sans-serif; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(2.4rem, 5vw, 4.2rem); line-height: 1.05; font-weight: 800; }
+    h2 { font-size: clamp(1.7rem, 3.2vw, 2.6rem); font-weight: 700; margin-bottom: .35rem; }
+    h3 { font-size: 1.15rem; font-weight: 650; color: var(--teal); margin-bottom: .5rem; }
+    .eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); margin-bottom: .6rem; }
+    .muted { color: var(--muted); font-size: 1.05rem; line-height: 1.55; max-width: 52rem; }
+    .lead { font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.55; max-width: 46rem; }
+
+    .brand { font-family: Outfit, sans-serif; font-weight: 800; font-size: 1.1rem; }
+    .brand span { color: var(--teal); }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.2vh; opacity: .9; }
+    .slide.dark .brand span { color: #5eead4; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; margin-top: 1.2rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: .9rem; margin-top: 1.1rem; }
+    .cards { display: grid; gap: .9rem; margin-top: 1.1rem; }
+    .card {
+      background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 1rem 1.1rem; box-shadow: 0 10px 30px rgba(15,23,42,.04);
+    }
+    .slide.dark .card { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.1); color: #e2e8f0; }
+    .card strong { display: block; font-family: Outfit, sans-serif; font-size: 1.05rem; margin-bottom: .25rem; }
+    .card p, .card li { color: var(--muted); font-size: .95rem; line-height: 1.45; }
+    .slide.dark .card p, .slide.dark .card li { color: #cbd5e1; }
+    .card ul { margin-left: 1.1rem; }
+    .chip {
+      display: inline-flex; align-items: center; gap: .35rem;
+      border: 1px solid #99f6e4; background: var(--teal-soft); color: #115e59;
+      border-radius: 999px; padding: .28rem .7rem; font-size: .78rem; font-weight: 600;
+      margin: .15rem .25rem .15rem 0;
+    }
+
+    .shot-wrap {
+      flex: 1; min-height: 0; margin-top: .8rem; border-radius: 14px; overflow: hidden;
+      border: 1px solid #cbd5e1; background: #0f172a; box-shadow: 0 18px 40px rgba(15,23,42,.18);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .shot-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .shot-wrap.contain img { object-fit: contain; background: #0f172a; }
+    .caption { margin-top: .55rem; font-size: .88rem; color: var(--muted); }
+
+    table.schema {
+      width: 100%; border-collapse: collapse; margin-top: .8rem; font-size: .88rem;
+      background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
+    }
+    table.schema th, table.schema td { padding: .55rem .7rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    table.schema th { background: #0f172a; color: #f8fafc; font-family: Outfit, sans-serif; font-weight: 600; }
+    table.schema tr:last-child td { border-bottom: none; }
+    code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .86em; }
+
+    .flow {
+      display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; margin-top: 1rem;
+    }
+    .flow .step {
+      background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: .7rem .9rem;
+      font-weight: 600; font-family: Outfit, sans-serif; font-size: .92rem;
+    }
+    .flow .arrow { color: var(--teal); font-weight: 800; }
+
+    .mermaid { background: #fff; border-radius: 14px; padding: .8rem 1rem; border: 1px solid var(--line); margin-top: .7rem; overflow: auto; }
+    .mermaid svg { max-width: 100%; height: auto; }
+
+    .footer-bar {
+      position: fixed; left: 0; right: 0; bottom: 0; height: 46px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.2rem; background: rgba(2,6,23,.88); color: #e2e8f0;
+      backdrop-filter: blur(8px); z-index: 50; font-size: .85rem;
+    }
+    .progress { position: absolute; left: 0; top: 0; height: 3px; background: var(--teal); width: 0%; }
+    .nav-btns { display: flex; gap: .4rem; }
+    .nav-btns button {
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+      color: #fff; border-radius: 8px; padding: .35rem .7rem; cursor: pointer; font: inherit;
+    }
+    .nav-btns button:hover { background: rgba(13,148,136,.45); }
+    .hint { opacity: .65; }
+
+    .title-center { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 58rem; }
+    .two-col-shot { display: grid; grid-template-columns: 1.15fr .85fr; gap: 1.2rem; flex: 1; min-height: 0; margin-top: .6rem; }
+    .two-col-shot .shot-wrap { margin-top: 0; height: 100%; }
+    .stack-list { list-style: none; margin-top: .8rem; }
+    .stack-list li {
+      padding: .7rem .9rem; margin-bottom: .45rem; background: #fff; border: 1px solid var(--line);
+      border-radius: 12px; display: flex; gap: .7rem; align-items: flex-start;
+    }
+    .stack-list b { font-family: Outfit, sans-serif; min-width: 7.5rem; color: var(--accent); }
+    .pill-row { margin-top: .9rem; }
+
+    @media (max-width: 960px) {
+      .grid-2, .grid-3, .grid-4, .two-col-shot { grid-template-columns: 1fr; }
+      .slide { padding: 2vh 4vw 8vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+
+    <!-- 1 TITLE -->
+    <section class="slide dark active" data-title="Title">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="muted" style="color:#94a3b8">Project Presentation</div></div>
+      <div class="title-center">
+        <div class="eyebrow">Campus Lost &amp; Found System</div>
+        <h1>FindIt</h1>
+        <p class="lead" style="margin-top:1rem;color:#cbd5e1">A web application for reporting, browsing, and verifying lost &amp; found items — powered by Laravel, Oracle 11g, and PL/SQL.</p>
+        <div class="pill-row" style="margin-top:1.4rem">
+          <span class="chip">Laravel 12</span>
+          <span class="chip">Oracle 11g XE</span>
+          <span class="chip">PL/SQL Package</span>
+          <span class="chip">Blade + Tailwind</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 AGENDA -->
+    <section class="slide" data-title="Agenda">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Agenda</div></div>
+      <h2>What we will cover</h2>
+      <div class="grid-2">
+        <ol class="stack-list" style="counter-reset: a">
+          <li><b>01</b><span>Problem &amp; objectives</span></li>
+          <li><b>02</b><span>Tech stack &amp; architecture</span></li>
+          <li><b>03</b><span>User &amp; admin features</span></li>
+          <li><b>04</b><span>ER diagram &amp; database schema</span></li>
+        </ol>
+        <ol class="stack-list">
+          <li><b>05</b><span>Data flow &amp; PL/SQL package</span></li>
+          <li><b>06</b><span>Live UI walkthrough (screenshots)</span></li>
+          <li><b>07</b><span>Demo accounts &amp; summary</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 3 PROBLEM -->
+    <section class="slide" data-title="Problem">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Motivation</div></div>
+      <h2>The campus problem</h2>
+      <p class="muted">Lost phones, IDs, bags, and notebooks pile up in offices with no shared digital record — owners struggle to search, claim, and prove ownership.</p>
+      <div class="grid-3">
+        <div class="card"><strong>Scattered notices</strong><p>Paper boards and chat groups are hard to search and easy to miss.</p></div>
+        <div class="card"><strong>No verification</strong><p>Anyone can claim an item without proof or admin review.</p></div>
+        <div class="card"><strong>No audit trail</strong><p>Status changes are not logged — disputes are hard to resolve.</p></div>
+      </div>
+    </section>
+
+    <!-- 4 OBJECTIVES -->
+    <section class="slide" data-title="Objectives">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Objectives</div></div>
+      <h2>What FindIt delivers</h2>
+      <div class="grid-2">
+        <div class="card">
+          <strong>For students</strong>
+          <ul>
+            <li>Register &amp; log in securely</li>
+            <li>Browse / filter lost &amp; found board</li>
+            <li>Report items with photos</li>
+            <li>Submit claims with proof text</li>
+            <li>Track claim status on a dashboard</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>For admins</strong>
+          <ul>
+            <li>Separate admin console &amp; auth</li>
+            <li>Approve / reject claims via PL/SQL</li>
+            <li>Manage items, users, categories, locations</li>
+            <li>Monitor stats from package functions</li>
+            <li>Inspect Oracle audit logs</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 STACK -->
+    <section class="slide" data-title="Tech Stack">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Technology</div></div>
+      <h2>Tech stack</h2>
+      <ul class="stack-list">
+        <li><b>Frontend</b><span>Blade templates · Vite · Tailwind CSS 4 · Outfit / Work Sans</span></li>
+        <li><b>Backend</b><span>Laravel 12 · PHP 8.2 · Dual auth guards (user + admin)</span></li>
+        <li><b>Database</b><span>Oracle Database 11g XE · Sequences · Triggers · Package <span class="mono">findit_pkg</span></span></li>
+        <li><b>Connectivity</b><span>Custom PDO_OCI driver (<span class="mono">app/Database/*</span>) — Oracle 11g safe (ROWNUM)</span></li>
+        <li><b>Business logic</b><span><span class="mono">FinditPlsqlService</span> calls PL/SQL procedures &amp; functions</span></li>
+      </ul>
+    </section>
+
+    <!-- 6 ARCHITECTURE -->
+    <section class="slide" data-title="Architecture">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Architecture</div></div>
+      <h2>System architecture</h2>
+      <div class="mermaid">
+flowchart LR
+  U[Student Browser] --> L[Laravel Blade App]
+  A[Admin Browser] --> L
+  L --> C[Controllers]
+  C --> M[Eloquent Models]
+  C --> S[FinditPlsqlService]
+  M --> O[(Oracle 11g XE)]
+  S --> P[findit_pkg]
+  P --> O
+  T[DB Triggers] --> AL[(audit_logs)]
+  O --> T
+      </div>
+      <p class="caption">Reads often go through Eloquent; critical writes (register, add item, claim approve/reject) go through the PL/SQL package.</p>
+    </section>
+
+    <!-- 7 USER FEATURES -->
+    <section class="slide" data-title="User Features">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Features</div></div>
+      <h2>User-side features</h2>
+      <div class="grid-3">
+        <div class="card"><strong>Auth</strong><p>Register, login, logout with dedicated user session.</p></div>
+        <div class="card"><strong>Browse board</strong><p>Filter by type, category, location, status, and keyword search.</p></div>
+        <div class="card"><strong>Item detail</strong><p>View description, image, location, and claim context.</p></div>
+        <div class="card"><strong>Report item</strong><p>Create LOST / FOUND listing with optional image upload.</p></div>
+        <div class="card"><strong>Claims</strong><p>Submit ownership claim with message + proof description.</p></div>
+        <div class="card"><strong>Dashboard</strong><p>My items &amp; my claims with live status tracking.</p></div>
+      </div>
+    </section>
+
+    <!-- 8 ADMIN FEATURES -->
+    <section class="slide" data-title="Admin Features">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Features</div></div>
+      <h2>Admin console features</h2>
+      <div class="grid-3">
+        <div class="card"><strong>Operations dashboard</strong><p>Users, items, lost/found, pending &amp; approved claims from PL/SQL functions.</p></div>
+        <div class="card"><strong>Claim review</strong><p>Filter by status · approve / reject with package procedures.</p></div>
+        <div class="card"><strong>Item management</strong><p>Update status or remove listings.</p></div>
+        <div class="card"><strong>Users</strong><p>View and remove campus user accounts.</p></div>
+        <div class="card"><strong>Catalog</strong><p>CRUD for categories and campus locations.</p></div>
+        <div class="card"><strong>Audit logs</strong><p>Trigger-written history of inserts/updates on items &amp; claims.</p></div>
+      </div>
+    </section>
+
+    <!-- 9 ER -->
+    <section class="slide" data-title="ER Diagram">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Database</div></div>
+      <h2>Entity-Relationship diagram</h2>
+      <div class="mermaid">
+erDiagram
+  USERS ||--o{ ITEMS : reports
+  USERS ||--o{ CLAIMS : submits
+  CATEGORIES ||--o{ ITEMS : classifies
+  LOCATIONS ||--o{ ITEMS : located_at
+  ITEMS ||--o{ CLAIMS : receives
+  ITEMS ||--o{ AUDIT_LOGS : tracked_in
+  CLAIMS ||--o{ AUDIT_LOGS : tracked_in
+  ADMINS ||--o{ CLAIMS : reviews
+
+  USERS {
+    number user_id PK
+    varchar name
+    varchar email UK
+    varchar password
+    varchar phone
+    varchar address
+  }
+  ADMINS {
+    number admin_id PK
+    varchar name
+    varchar email UK
+    varchar password
+  }
+  CATEGORIES {
+    number category_id PK
+    varchar category_name UK
+  }
+  LOCATIONS {
+    number location_id PK
+    varchar location_name UK
+    varchar description
+  }
+  ITEMS {
+    number item_id PK
+    number user_id FK
+    number category_id FK
+    number location_id FK
+    varchar item_name
+    varchar item_type
+    varchar status
+    varchar item_image
+    date lost_or_found_date
+  }
+  CLAIMS {
+    number claim_id PK
+    number item_id FK
+    number user_id FK
+    varchar claim_status
+    varchar claim_message
+    varchar proof_description
+  }
+  AUDIT_LOGS {
+    number audit_id PK
+    varchar table_name
+    number record_id
+    varchar action_type
+    varchar old_status
+    varchar new_status
+    varchar action_by
+  }
+      </div>
+    </section>
+
+    <!-- 10 SCHEMA -->
+    <section class="slide" data-title="Schema">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Database</div></div>
+      <h2>Relational schema overview</h2>
+      <table class="schema">
+        <thead><tr><th>Table</th><th>Key columns</th><th>Constraints / notes</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">users</span></td><td>user_id, name, email, password, phone, address</td><td>PK, unique email, email format check</td></tr>
+          <tr><td><span class="mono">admins</span></td><td>admin_id, name, email, password</td><td>Separate admin identity</td></tr>
+          <tr><td><span class="mono">categories</span></td><td>category_id, category_name</td><td>Unique names</td></tr>
+          <tr><td><span class="mono">locations</span></td><td>location_id, location_name, description</td><td>Campus places</td></tr>
+          <tr><td><span class="mono">items</span></td><td>item_id, user_id, category_id, location_id, item_type, status, item_image</td><td>Type: LOST/FOUND · Status: PENDING/FOUND/CLAIMED/RETURNED/REJECTED</td></tr>
+          <tr><td><span class="mono">claims</span></td><td>claim_id, item_id, user_id, claim_status, proof_description</td><td>PENDING / APPROVED / REJECTED</td></tr>
+          <tr><td><span class="mono">audit_logs</span></td><td>audit_id, table_name, record_id, action_type, old/new_status, action_by</td><td>Filled by Oracle triggers</td></tr>
+        </tbody>
+      </table>
+      <p class="caption">IDs come from sequences + BEFORE INSERT triggers. Scripts live in <span class="mono">database/oracle/</span>.</p>
+    </section>
+
+    <!-- 11 SCHEMA DIAGRAM -->
+    <section class="slide" data-title="Schema Diagram">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Database</div></div>
+      <h2>Schema relationship map</h2>
+      <div class="mermaid">
+flowchart TB
+  subgraph Identity
+    USERS[(USERS)]
+    ADMINS[(ADMINS)]
+  end
+  subgraph Catalog
+    CAT[(CATEGORIES)]
+    LOC[(LOCATIONS)]
+  end
+  subgraph Core
+    ITEMS[(ITEMS)]
+    CLAIMS[(CLAIMS)]
+  end
+  AUDIT[(AUDIT_LOGS)]
+  USERS -->|user_id| ITEMS
+  CAT -->|category_id| ITEMS
+  LOC -->|location_id| ITEMS
+  USERS -->|user_id| CLAIMS
+  ITEMS -->|item_id| CLAIMS
+  ADMINS -.->|approve/reject via PL/SQL| CLAIMS
+  ITEMS --> AUDIT
+  CLAIMS --> AUDIT
+      </div>
+    </section>
+
+    <!-- 12 DATA FLOW OVERVIEW -->
+    <section class="slide" data-title="Data Flow Overview">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Data Flow</div></div>
+      <h2>End-to-end data flow</h2>
+      <div class="flow">
+        <div class="step">1. Register / Login</div><div class="arrow">→</div>
+        <div class="step">2. Report Item</div><div class="arrow">→</div>
+        <div class="step">3. Browse &amp; Claim</div><div class="arrow">→</div>
+        <div class="step">4. Admin Review</div><div class="arrow">→</div>
+        <div class="step">5. Audit Log</div>
+      </div>
+      <div class="grid-2" style="margin-top:1.2rem">
+        <div class="card"><strong>Application layer</strong><p>HTTP → Controller → validation → <span class="mono">FinditPlsqlService</span> or Eloquent.</p></div>
+        <div class="card"><strong>Database layer</strong><p>Package procedures update rows; triggers write <span class="mono">audit_logs</span> automatically.</p></div>
+      </div>
+    </section>
+
+    <!-- 13 FLOW REGISTER -->
+    <section class="slide" data-title="Flow Register">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Data Flow</div></div>
+      <h2>Flow: user registration</h2>
+      <div class="mermaid">
+sequenceDiagram
+  participant U as User
+  participant C as UserAuthController
+  participant S as FinditPlsqlService
+  participant P as findit_pkg.register_user
+  participant DB as USERS table
+  U->>C: POST /register
+  C->>S: registerUser(...)
+  S->>P: CALL procedure
+  P->>DB: INSERT user
+  DB-->>P: OK
+  P-->>S: success
+  S-->>C: user_id
+  C-->>U: Redirect / login session
+      </div>
+    </section>
+
+    <!-- 14 FLOW ITEM -->
+    <section class="slide" data-title="Flow Report Item">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Data Flow</div></div>
+      <h2>Flow: report lost / found item</h2>
+      <div class="mermaid">
+sequenceDiagram
+  participant U as User
+  participant C as ItemController
+  participant S as FinditPlsqlService
+  participant P as findit_pkg.add_item
+  participant DB as ITEMS
+  participant T as Trigger
+  participant A as AUDIT_LOGS
+  U->>C: POST /items (+ image)
+  C->>C: Store image under storage/app/public/items
+  C->>S: addItem(data)
+  S->>P: CALL add_item
+  P->>DB: INSERT item + status
+  DB->>T: AFTER/BEFORE trigger
+  T->>A: INSERT audit row
+  P-->>U: Item appears on board
+      </div>
+    </section>
+
+    <!-- 15 FLOW CLAIM -->
+    <section class="slide" data-title="Flow Claim">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Data Flow</div></div>
+      <h2>Flow: claim → approve / reject</h2>
+      <div class="mermaid">
+sequenceDiagram
+  participant U as Claimant
+  participant AC as ClaimController
+  participant AD as AdminClaimController
+  participant S as FinditPlsqlService
+  participant P as findit_pkg
+  participant DB as CLAIMS / ITEMS
+  U->>AC: POST /items/{id}/claims
+  AC->>S: submitClaim
+  S->>P: submit_claim
+  P->>DB: claim_status = PENDING
+  Note over AD: Admin reviews in console
+  AD->>S: approveClaim / rejectClaim
+  S->>P: approve_claim / reject_claim
+  P->>DB: Update claim + item status
+  Note over DB: Triggers append AUDIT_LOGS
+      </div>
+    </section>
+
+    <!-- 16 PLSQL -->
+    <section class="slide" data-title="PL/SQL">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">PL/SQL</div></div>
+      <h2>Package <span class="mono">findit_pkg</span></h2>
+      <div class="grid-2">
+        <div class="card">
+          <strong>Procedures</strong>
+          <ul>
+            <li><span class="mono">register_user</span></li>
+            <li><span class="mono">add_item</span> / <span class="mono">update_item_status</span></li>
+            <li><span class="mono">submit_claim</span></li>
+            <li><span class="mono">approve_claim</span> / <span class="mono">reject_claim</span></li>
+            <li><span class="mono">add/delete_category</span>, <span class="mono">location</span></li>
+            <li><span class="mono">delete_user</span> / <span class="mono">delete_item</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>Functions (dashboard)</strong>
+          <ul>
+            <li><span class="mono">get_total_users</span></li>
+            <li><span class="mono">get_total_items</span></li>
+            <li><span class="mono">get_lost_items</span> / <span class="mono">get_found_items</span></li>
+            <li><span class="mono">get_pending_claims</span></li>
+            <li><span class="mono">get_approved_claims</span></li>
+          </ul>
+          <p style="margin-top:.6rem">Also: sequence triggers + audit triggers on items/claims.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17 UI INTRO -->
+    <section class="slide dark" data-title="UI Walkthrough">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="muted" style="color:#94a3b8">Screenshots</div></div>
+      <div class="title-center">
+        <div class="eyebrow">Interface walkthrough</div>
+        <h1>Real product screens</h1>
+        <p class="lead" style="margin-top:1rem;color:#cbd5e1">Captured from the running app — home, browse, auth, user flows, and the full admin console.</p>
+      </div>
+    </section>
+
+    <!-- SCREENSHOTS -->
+    <section class="slide" data-title="Home">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Public</div></div>
+      <h2>Landing page</h2>
+      <p class="muted">Brand-first hero with campus imagery and clear CTAs to browse or register.</p>
+      <div class="shot-wrap"><img src="screenshots/20-home-viewport.png" alt="Home page" /></div>
+    </section>
+
+    <section class="slide" data-title="Home Full">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Public</div></div>
+      <h2>Home — full page</h2>
+      <div class="shot-wrap contain"><img src="screenshots/01-home.png" alt="Home full" /></div>
+    </section>
+
+    <section class="slide" data-title="Browse">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Public</div></div>
+      <h2>Browse lost &amp; found board</h2>
+      <p class="muted">Searchable listings with filters for type, category, location, and status.</p>
+      <div class="shot-wrap"><img src="screenshots/19-browse-viewport.png" alt="Browse" /></div>
+    </section>
+
+    <section class="slide" data-title="Browse Full">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Public</div></div>
+      <h2>Browse — full page</h2>
+      <div class="shot-wrap contain"><img src="screenshots/02-browse-items.png" alt="Browse full" /></div>
+    </section>
+
+    <section class="slide" data-title="Item Detail">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Public</div></div>
+      <h2>Item detail</h2>
+      <p class="muted">Full description, image, metadata, and claim entry point for signed-in users.</p>
+      <div class="shot-wrap contain"><img src="screenshots/03-item-detail.png" alt="Item detail" /></div>
+    </section>
+
+    <section class="slide" data-title="Login Register">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Auth</div></div>
+      <h2>User authentication</h2>
+      <div class="two-col-shot">
+        <div>
+          <h3>Login</h3>
+          <div class="shot-wrap"><img src="screenshots/04-user-login.png" alt="User login" /></div>
+        </div>
+        <div>
+          <h3>Register</h3>
+          <div class="shot-wrap"><img src="screenshots/05-register.png" alt="Register" /></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="User Dashboard">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · User</div></div>
+      <h2>User dashboard</h2>
+      <p class="muted">Overview of personal activity after login.</p>
+      <div class="shot-wrap contain"><img src="screenshots/06-user-dashboard.png" alt="User dashboard" /></div>
+    </section>
+
+    <section class="slide" data-title="Report Item">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · User</div></div>
+      <h2>Report an item</h2>
+      <p class="muted">Form for LOST/FOUND type, category, location, date, description, and image.</p>
+      <div class="shot-wrap contain"><img src="screenshots/07-report-item.png" alt="Report item" /></div>
+    </section>
+
+    <section class="slide" data-title="My Items Claims">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · User</div></div>
+      <h2>My items &amp; my claims</h2>
+      <div class="two-col-shot">
+        <div>
+          <h3>My items</h3>
+          <div class="shot-wrap contain"><img src="screenshots/08-my-items.png" alt="My items" /></div>
+        </div>
+        <div>
+          <h3>My claims</h3>
+          <div class="shot-wrap contain"><img src="screenshots/09-my-claims.png" alt="My claims" /></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Admin Login">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Admin</div></div>
+      <h2>Admin login</h2>
+      <p class="muted">Separate guard and session from student accounts.</p>
+      <div class="shot-wrap"><img src="screenshots/10-admin-login.png" alt="Admin login" /></div>
+    </section>
+
+    <section class="slide" data-title="Admin Dashboard">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Admin</div></div>
+      <h2>Admin dashboard</h2>
+      <p class="muted">Live stats from <span class="mono">findit_pkg</span> functions · recent claims, items, and audit events.</p>
+      <div class="shot-wrap contain"><img src="screenshots/11-admin-dashboard.png" alt="Admin dashboard" /></div>
+    </section>
+
+    <section class="slide" data-title="Admin Claims">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Admin</div></div>
+      <h2>Claims management</h2>
+      <p class="muted">Filter chips for PENDING / APPROVED / REJECTED · approve &amp; reject actions.</p>
+      <div class="shot-wrap contain"><img src="screenshots/12-admin-claims.png" alt="Admin claims" /></div>
+    </section>
+
+    <section class="slide" data-title="Admin Items">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Admin</div></div>
+      <h2>Items management</h2>
+      <div class="shot-wrap contain"><img src="screenshots/14-admin-items.png" alt="Admin items" /></div>
+    </section>
+
+    <section class="slide" data-title="Admin Users">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Admin</div></div>
+      <h2>Users management</h2>
+      <div class="shot-wrap contain"><img src="screenshots/15-admin-users.png" alt="Admin users" /></div>
+    </section>
+
+    <section class="slide" data-title="Admin Catalog">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Admin</div></div>
+      <h2>Categories &amp; locations</h2>
+      <div class="two-col-shot">
+        <div>
+          <h3>Categories</h3>
+          <div class="shot-wrap contain"><img src="screenshots/16-admin-categories.png" alt="Categories" /></div>
+        </div>
+        <div>
+          <h3>Locations</h3>
+          <div class="shot-wrap contain"><img src="screenshots/17-admin-locations.png" alt="Locations" /></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Admin Audit">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">UI · Admin</div></div>
+      <h2>Audit logs</h2>
+      <p class="muted">Oracle trigger trail — table, record, action, old → new status, actor.</p>
+      <div class="shot-wrap contain"><img src="screenshots/18-admin-audit.png" alt="Audit logs" /></div>
+    </section>
+
+    <!-- DEMO -->
+    <section class="slide" data-title="Demo">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Demo</div></div>
+      <h2>Demo accounts</h2>
+      <table class="schema">
+        <thead><tr><th>Role</th><th>Email</th><th>Password</th></tr></thead>
+        <tbody>
+          <tr><td>User</td><td><span class="mono">john.smith@university.edu</span></td><td><span class="mono">pass_john123</span></td></tr>
+          <tr><td>Admin</td><td><span class="mono">admin.one@university.edu</span></td><td><span class="mono">admin_pass_secure_001</span></td></tr>
+        </tbody>
+      </table>
+      <div class="grid-2" style="margin-top:1rem">
+        <div class="card"><strong>User URL</strong><p><span class="mono">/login</span> · board at <span class="mono">/items</span></p></div>
+        <div class="card"><strong>Admin URL</strong><p><span class="mono">/admin/login</span> · console dashboard</p></div>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section class="slide" data-title="Summary">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="eyebrow" style="margin:0">Summary</div></div>
+      <h2>Key takeaways</h2>
+      <div class="grid-2">
+        <div class="card"><strong>Complete campus workflow</strong><p>Report → browse → claim → admin verify → return/close.</p></div>
+        <div class="card"><strong>Oracle + PL/SQL first</strong><p>Business rules and stats live in <span class="mono">findit_pkg</span>; triggers keep an audit trail.</p></div>
+        <div class="card"><strong>Dual role system</strong><p>Students and admins use separate guards and UIs.</p></div>
+        <div class="card"><strong>Modern Laravel UI</strong><p>Clean Blade + Tailwind interface with real item imagery.</p></div>
+      </div>
+    </section>
+
+    <!-- Q&A -->
+    <section class="slide dark" data-title="Q&A">
+      <div class="topbar"><div class="brand">Find<span>It</span></div><div class="muted" style="color:#94a3b8">Thank you</div></div>
+      <div class="title-center">
+        <div class="eyebrow">Questions</div>
+        <h1>Thank you</h1>
+        <p class="lead" style="margin-top:1rem;color:#cbd5e1">FindIt — Campus Lost &amp; Found · Laravel · Oracle · PL/SQL</p>
+        <p style="margin-top:1.2rem;color:#94a3b8" class="mono">github.com/Siam-Kabir-2/findit</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="footer-bar">
+    <div class="progress" id="progress"></div>
+    <div><strong>FindIt</strong> <span class="hint">· ← → or click buttons · F for fullscreen</span></div>
+    <div style="display:flex;gap:1rem;align-items:center">
+      <span id="counter">1 / 1</span>
+      <div class="nav-btns">
+        <button type="button" id="prev" aria-label="Previous">←</button>
+        <button type="button" id="next" aria-label="Next">→</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#ccfbf1',
+        primaryTextColor: '#0f172a',
+        primaryBorderColor: '#0d9488',
+        lineColor: '#64748b',
+        secondaryColor: '#f1f5f9',
+        tertiaryColor: '#fff',
+        fontFamily: 'Work Sans, sans-serif'
+      },
+      er: { useMaxWidth: true },
+      flowchart: { useMaxWidth: true },
+      sequence: { useMaxWidth: true }
+    });
+
+    const slides = [...document.querySelectorAll('.slide')];
+    let i = 0;
+
+    async function renderMermaidIn(slide) {
+      const nodes = slide.querySelectorAll('.mermaid:not([data-processed])');
+      if (!nodes.length) return;
+      for (const node of nodes) {
+        const id = 'mmd-' + Math.random().toString(36).slice(2);
+        const def = node.textContent;
+        try {
+          const { svg } = await mermaid.render(id, def);
+          node.innerHTML = svg;
+          node.dataset.processed = '1';
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    }
+
+    async function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      document.getElementById('counter').textContent = `${i + 1} / ${slides.length}`;
+      document.getElementById('progress').style.width = ((i + 1) / slides.length * 100) + '%';
+      document.title = `FindIt — ${slides[i].dataset.title || 'Presentation'} (${i + 1}/${slides.length})`;
+      await renderMermaidIn(slides[i]);
+    }
+
+    document.getElementById('prev').onclick = () => show(i - 1);
+    document.getElementById('next').onclick = () => show(i + 1);
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (e.key === 'Home') show(0);
+      if (e.key === 'End') show(slides.length - 1);
+      if (e.key.toLowerCase() === 'f') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      }
+    });
+
+    show(0);
+  </script>
+</body>
+</html>

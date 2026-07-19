@@ -34,3 +34,5 @@ check_*.php
 test_*.php
 assign_*.php
 build_history.ps1
+/docs/presentation/node_modules
+/docs/presentation/package-lock.json

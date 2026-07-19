@@ -8,7 +8,7 @@
         <div class="page-header">
             <div>
                 <span class="eyebrow">Workspace</span>
-                <h2>Hello, {{ auth('web')->user()->name }}</h2>
+                <h2>Hello, {{ auth()->user()->name }}</h2>
                 <p>Track your posts and claim requests in one place.</p>
             </div>
             <div class="actions-inline">
@@ -44,7 +44,7 @@
                 <h3>Recent posts</h3>
                 <a href="{{ route('items.mine') }}" class="btn btn-ghost btn-sm">View all</a>
             </div>
-            @if(count($recentItems))
+            @if($recentItems->count())
                 <div class="table-wrap">
                     <table class="data">
                         <thead>
@@ -58,9 +58,9 @@
                         <tbody>
                         @foreach($recentItems as $item)
                             <tr>
-                                <td><a href="{{ route('items.show', $item->item_id) }}">{{ $item->item_name }}</a></td>
+                                <td><a href="{{ route('items.show', $item) }}">{{ $item->item_name }}</a></td>
                                 <td>{{ $item->item_type }}</td>
-                                <td>{{ $item->category_name }}</td>
+                                <td>{{ $item->category->category_name }}</td>
                                 <td><span class="badge badge-{{ strtolower($item->status) }}">{{ $item->status }}</span></td>
                             </tr>
                         @endforeach

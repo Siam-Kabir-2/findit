@@ -15,15 +15,16 @@
             <nav class="nav-links" aria-label="Primary">
                 <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
                 <a href="{{ route('items.index') }}" class="{{ request()->routeIs('items.index') || request()->routeIs('items.show') ? 'active' : '' }}">Browse</a>
-                @auth('web')
+                @auth
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
-                    <a href="{{ route('items.mine') }}" class="{{ request()->routeIs('items.mine') || request()->routeIs('items.create') ? 'active' : '' }}">My Items</a>
+                    <a href="{{ route('items.mine') }}" class="{{ request()->routeIs('items.mine') || request()->routeIs('items.create') || request()->routeIs('items.edit') ? 'active' : '' }}">My Items</a>
                     <a href="{{ route('claims.mine') }}" class="{{ request()->routeIs('claims.mine') ? 'active' : '' }}">My Claims</a>
+                    <a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.*') ? 'active' : '' }}">Profile</a>
                 @endauth
                 <a href="{{ route('admin.login') }}">Admin</a>
             </nav>
             <div class="actions-inline">
-                @auth('web')
+                @auth
                     <a href="{{ route('items.create') }}" class="btn btn-accent btn-sm">Report</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -41,10 +42,11 @@
         <nav id="mobile-nav" class="mobile-nav" data-mobile-nav aria-label="Mobile">
             <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
             <a href="{{ route('items.index') }}">Browse</a>
-            @auth('web')
+            @auth
                 <a href="{{ route('dashboard') }}">Dashboard</a>
                 <a href="{{ route('items.mine') }}">My Items</a>
                 <a href="{{ route('claims.mine') }}">My Claims</a>
+                <a href="{{ route('profile.edit') }}">Profile</a>
                 <a href="{{ route('items.create') }}">Report Item</a>
             @else
                 <a href="{{ route('login') }}">Login</a>
@@ -55,23 +57,14 @@
     </header>
 
     <main id="main" class="site-main">
-        @if(session('success'))
-            <div class="container" style="padding-top:1rem;" role="status">
-                <div class="alert alert-success">{{ session('success') }}</div>
-            </div>
-        @endif
-        @if($errors->any())
-            <div class="container" style="padding-top:1rem;" role="alert">
-                <div class="alert alert-error">{{ $errors->first() }}</div>
-            </div>
-        @endif
+        @include('partials.flash')
         @yield('content')
     </main>
 
     <footer class="footer">
         <div class="footer-inner">
             <div><strong>FindIt</strong> — campus lost & found</div>
-            <div>Oracle · Laravel · PL/SQL</div>
+            <div>&copy; {{ date('Y') }} FindIt</div>
         </div>
     </footer>
 </div>

@@ -107,6 +107,6 @@
             </tbody>
         </table>
     </div>
-    <p class="meta" style="margin-top:0.85rem;">Stats from <code>findit_pkg</code> functions · audit from Oracle triggers</p>
+    <p class="meta" style="margin-top:0.85rem;">Stats from service queries · audit from MySQL triggers</p>
 </div>
 @endsection

@@ -4,7 +4,10 @@ namespace App\Providers;
 
 use App\Database\OracleConnection;
 use App\Database\OracleConnector;
+use App\Models\Item;
+use App\Policies\ItemPolicy;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +24,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+        Gate::policy(Item::class, ItemPolicy::class);
     }
 }

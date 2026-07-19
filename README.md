@@ -2,7 +2,7 @@
 
 **FindIt** is a campus **Lost & Found** management system. Students report lost or found items, submit ownership claims, and admins review claims, manage the catalog, and audit activity.
 
-The application is built with **Laravel 12**, connects to **Oracle Database 11g XE** through a custom **PDO_OCI** driver, and routes core business logic through a **PL/SQL** package (`findit_pkg`).
+The application is built with **Laravel 12** and runs on **MySQL / MariaDB** (XAMPP). Core business rules live in `App\Services\FinditPlsqlService` (PHP transactions). Original **Oracle** SQL and PL/SQL scripts remain under `database/oracle/` for coursework reference.
 
 ---
 
@@ -23,8 +23,8 @@ The application is built with **Laravel 12**, connects to **Oracle Database 11g 
 
 ### Admin console (`/admin`)
 - Separate admin login and session guard
-- Dashboard with live stats from PL/SQL functions
-- Review claims — approve or reject via PL/SQL
+- Dashboard with live stats
+- Review claims — approve or reject
 - Manage items, users, categories, and locations
 - Audit log viewer (status/action history from DB triggers)
 
@@ -35,14 +35,13 @@ The application is built with **Laravel 12**, connects to **Oracle Database 11g 
 | Layer | Technology |
 |-------|------------|
 | Backend | Laravel 12, PHP 8.2+ |
-| Database | Oracle Database 11g XE |
-| DB access | Custom PDO_OCI connector (`app/Database/*`) |
-| Business logic | PL/SQL package `findit_pkg` + triggers |
+| Database (runtime) | MySQL / MariaDB (XAMPP) |
+| DB access | Laravel PDO MySQL |
+| Business logic | `FinditPlsqlService` + MySQL audit triggers |
 | Frontend | Blade, Vite, Tailwind CSS 4 |
 | Auth | Dual guards: `web` (users) and `admin` (admins) |
 
-> **Why not `yajra/laravel-oci8`?**  
-> The stock OCI8 extension builds often target newer Oracle clients and do not play well with **Oracle 11g XE**. FindIt uses PHP’s **PDO_OCI** with a small Laravel connector that emits **Oracle 11g-safe SQL** (including `ROWNUM` pagination).
+Oracle scripts (`database/oracle/`) and the optional custom PDO_OCI driver (`app/Database/*`) are kept if you need to demonstrate Oracle / PL/SQL separately.
 
 ---
 
@@ -50,13 +49,19 @@ The application is built with **Laravel 12**, connects to **Oracle Database 11g 
 
 ```
 app/
-  Database/          # Oracle connector, connection, grammars, processor
+  Database/          # Optional Oracle connector (unused when DB_CONNECTION=mysql)
   Http/Controllers/  # User + admin controllers
-  Models/            # Eloquent models mapped to Oracle tables
+  Models/            # Eloquent models
   Services/
-    FinditPlsqlService.php   # Calls findit_pkg procedures/functions
+    FinditPlsqlService.php   # Business rules (was findit_pkg)
 database/
-  oracle/
+  mysql/             # Active schema for XAMPP MySQL
+    01_create_database.sql
+    02_create_tables.sql
+    03_insert_sample_data.sql
+    04_basic_queries.sql
+    05_triggers.sql
+  oracle/            # Kept for Oracle/PL/SQL coursework
     01_create_user_schema.sql
     02_create_tables.sql
     03_insert_sample_data.sql
@@ -86,82 +91,44 @@ Core tables:
 Item statuses: `PENDING`, `FOUND`, `CLAIMED`, `RETURNED`, `REJECTED`  
 Claim statuses: `PENDING`, `APPROVED`, `REJECTED`
 
-Sequences + `BEFORE INSERT` triggers assign primary keys. Status/audit triggers write to `audit_logs`.
-
----
-
-## PL/SQL package (`findit_pkg`)
-
-Defined in `database/oracle/05_plsql_triggers_package.sql`. Laravel calls it through `App\Services\FinditPlsqlService`.
-
-### Procedures
-| Procedure | Role |
-|-----------|------|
-| `register_user` | Create a user |
-| `add_item` | Report a lost/found item |
-| `update_item_status` | Change item status |
-| `submit_claim` | Create a claim |
-| `approve_claim` / `reject_claim` | Admin claim decisions |
-| `add_category` / `add_location` | Catalog maintenance |
-| `delete_*` | Safe deletes for users, items, categories, locations |
-
-### Functions (dashboard)
-`get_total_users`, `get_total_items`, `get_pending_claims`, `get_approved_claims`, `get_lost_items`, `get_found_items`
+MySQL uses `AUTO_INCREMENT` primary keys. Audit triggers on `items` and `claims` write to `audit_logs`.
 
 ---
 
 ## Requirements
 
-- **PHP 8.2+** with extensions: `pdo_oci`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`
+- **PHP 8.2+** with extensions: `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`
 - **Composer**
 - **Node.js 18+** and npm (Vite build)
-- **Oracle Database 11g XE** listening on `1521` (service/SID `XE`)
-- Oracle Instant Client compatible with PDO_OCI on your OS
-- Recommended local stack on Windows: **XAMPP** (PHP) + Oracle XE
+- **XAMPP MySQL/MariaDB** listening on `3306`
 
 ---
 
-## Oracle setup
+## MySQL setup (XAMPP)
 
-Run the scripts **in order** (SQL\*Plus, SQL Developer, or similar).
+Start **MySQL** in the XAMPP Control Panel, then run the scripts in order from the project root.
 
-### 1. Create schema user
+**Command Prompt (cmd):**
 
-`database/oracle/01_create_user_schema.sql`
-
-Creates user `findit` / password `106` (adjust if needed) and grants:
-
-- `CONNECT`, `RESOURCE`
-- `CREATE SESSION`, `CREATE TABLE`, `CREATE SEQUENCE`, `CREATE TRIGGER`, `CREATE PROCEDURE`
-- unlimited quota on `USERS`
-
-> The script connects as `SYSTEM`. Change the SYSTEM password in the script to match your install.
-
-### 2. Tables & sequences
-
-`database/oracle/02_create_tables.sql`
-
-### 3. Sample data
-
-`database/oracle/03_insert_sample_data.sql`
-
-### 4. Optional reference queries
-
-`database/oracle/04_basic_queries.sql`
-
-### 5. Triggers + PL/SQL package
-
-`database/oracle/05_plsql_triggers_package.sql`
-
-Confirm the package compiled:
-
-```sql
-SELECT object_name, object_type, status
-FROM   user_objects
-WHERE  object_name = 'FINDIT_PKG';
+```bat
+C:\xampp\mysql\bin\mysql.exe -u root < database\mysql\01_create_database.sql
+C:\xampp\mysql\bin\mysql.exe -u root findit < database\mysql\02_create_tables.sql
+C:\xampp\mysql\bin\mysql.exe -u root findit < database\mysql\05_triggers.sql
+C:\xampp\mysql\bin\mysql.exe -u root findit < database\mysql\03_insert_sample_data.sql
 ```
 
-Status should be `VALID`.
+**PowerShell:**
+
+```powershell
+Get-Content database\mysql\01_create_database.sql -Raw | C:\xampp\mysql\bin\mysql.exe -u root
+Get-Content database\mysql\02_create_tables.sql -Raw | C:\xampp\mysql\bin\mysql.exe -u root
+Get-Content database\mysql\05_triggers.sql -Raw | C:\xampp\mysql\bin\mysql.exe -u root
+Get-Content database\mysql\03_insert_sample_data.sql -Raw | C:\xampp\mysql\bin\mysql.exe -u root
+```
+
+Optional reference queries: `database/mysql/04_basic_queries.sql`.
+
+If your root user has a password, add `-p` to each mysql command.
 
 ---
 
@@ -182,20 +149,19 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Set Oracle connection values in `.env`:
+Set MySQL connection values in `.env` (XAMPP defaults):
 
 ```env
 APP_NAME=FindIt
 APP_URL=http://127.0.0.1:8000
 
-DB_CONNECTION=oracle
+DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=1521
-DB_DATABASE=XE
-DB_USERNAME=findit
-DB_PASSWORD=106
+DB_PORT=3306
+DB_DATABASE=findit
+DB_USERNAME=root
+DB_PASSWORD=
 
-# Prefer file/sync drivers (Oracle session/cache tables are not used)
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 CACHE_STORE=file
@@ -229,7 +195,7 @@ Admin login: [http://127.0.0.1:8000/admin/login](http://127.0.0.1:8000/admin/log
 
 ## Demo accounts
 
-Seeded by `03_insert_sample_data.sql`. Passwords are rehashed to bcrypt on first successful login if needed.
+Seeded by `database/mysql/03_insert_sample_data.sql`. Passwords are rehashed to bcrypt on first successful login if needed.
 
 | Role  | Email                         | Password                 |
 |-------|-------------------------------|--------------------------|
@@ -256,19 +222,25 @@ Seeded by `03_insert_sample_data.sql`. Passwords are rehashed to bcrypt on first
 
 ---
 
-## How Laravel talks to Oracle
+## How Laravel talks to MySQL
 
-1. `config/database.php` registers connection `oracle`.
-2. `AppServiceProvider` binds the custom connector in `app/Database/`.
-3. Eloquent models use the `oracle` connection for reads/listing.
-4. Writes that must stay consistent with business rules go through `FinditPlsqlService` → `findit_pkg`.
+1. `.env` sets `DB_CONNECTION=mysql`.
+2. Controllers use `DB::select` / Eloquent for reads.
+3. Writes go through `FinditPlsqlService` (transactions + validation).
+4. MySQL triggers append rows to `audit_logs` on item/claim changes.
 
 Example flow — **approve claim**:
 
 1. Admin posts to `/admin/claims/{id}/approve`
 2. Controller calls `FinditPlsqlService::approveClaim()`
-3. Package updates claim + related item status
+3. Service updates claim + related item status
 4. Triggers append rows to `audit_logs`
+
+---
+
+## Oracle scripts (kept)
+
+`database/oracle/` still contains the original schema, sample data, and `findit_pkg` PL/SQL package. Use those if your course requires Oracle demos. The optional Oracle driver under `app/Database/` remains registered when `DB_CONNECTION=oracle`.
 
 ---
 
@@ -284,15 +256,13 @@ Example flow — **approve claim**:
 
 | Problem | What to check |
 |---------|----------------|
-| `could not find driver` / PDO OCI errors | Enable `pdo_oci` in `php.ini`; Instant Client on `PATH`; restart Apache/CLI |
-| ORA-12154 / connection refused | Oracle listener up; `DB_HOST`, `DB_PORT`, `DB_DATABASE=XE` |
-| ORA-01017 invalid username/password | Schema user from script 01; password matches `.env` |
-| Package INVALID | Re-run `05_plsql_triggers_package.sql`; check `USER_ERRORS` |
+| `could not find driver` (pdo_mysql) | Enable `extension=pdo_mysql` in XAMPP `php.ini`; restart PHP |
+| Connection refused | Start MySQL in XAMPP; `DB_HOST=127.0.0.1`, `DB_PORT=3306` |
+| Access denied for root | Match `DB_PASSWORD` to your XAMPP MySQL root password |
+| Unknown database `findit` | Run `01_create_database.sql` then tables/triggers/seed |
 | Blank styles | Run `npm install && npm run build` |
 | Images 404 | Run `php artisan storage:link` |
 | Session / cache DB errors | Set `SESSION_DRIVER=file`, `CACHE_STORE=file`, `QUEUE_CONNECTION=sync` |
-
-Disable conflicting OCI8 DLLs meant for newer Oracle if they crash PHP 8.2 against 11g (common on XAMPP). Prefer **PDO_OCI** only for this project.
 
 ---
 
@@ -300,7 +270,7 @@ Disable conflicting OCI8 DLLs meant for newer Oracle if they crash PHP 8.2 again
 
 - `.env` is gitignored — never commit real credentials
 - Dual auth prevents user sessions from accessing `/admin/*`
-- Claim approve/reject is admin-only and executed in PL/SQL
+- Claim approve/reject is admin-only
 - Demo passwords are for local/dev only; change them before any shared deployment
 
 ---

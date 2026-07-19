@@ -12,7 +12,7 @@ class Item extends Model
 
     protected $primaryKey = 'item_id';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
     public $timestamps = false;
 

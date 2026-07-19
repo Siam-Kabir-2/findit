@@ -4,18 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    use Notifiable;
+
     protected $table = 'users';
 
     protected $primaryKey = 'user_id';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
     protected $keyType = 'int';
 
-    public $timestamps = false;
+    const CREATED_AT = 'created_at';
+
+    const UPDATED_AT = 'updated_at';
 
     protected $fillable = [
         'name',
@@ -27,11 +32,13 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
+            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -39,11 +46,6 @@ class User extends Authenticatable
     public function getAuthIdentifierName(): string
     {
         return 'user_id';
-    }
-
-    public function getAuthPassword(): string
-    {
-        return $this->password;
     }
 
     public function items(): HasMany

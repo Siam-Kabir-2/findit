@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    body { margin: 0; padding: 24px; background: #fff; font-family: Calibri, Arial, sans-serif; }
+    h1 { font-size: 22px; color: #0f172a; margin: 0 0 16px; }
+    .box { background: #fff; padding: 8px; }
+    .mermaid { display: flex; justify-content: center; }
+  </style>
+</head>
+<body>
+  <div id="er" class="box">
+    <h1>Entity Relationship Diagram — FindIt</h1>
+    <pre class="mermaid">
+erDiagram
+  USERS ||--o{ ITEMS : reports
+  USERS ||--o{ CLAIMS : submits
+  CATEGORIES ||--o{ ITEMS : classifies
+  LOCATIONS ||--o{ ITEMS : located_at
+  ITEMS ||--o{ CLAIMS : receives
+
+  USERS {
+    NUMBER user_id PK
+    VARCHAR name
+    VARCHAR email UK
+    VARCHAR password
+    VARCHAR phone
+    VARCHAR address
+  }
+  ADMINS {
+    NUMBER admin_id PK
+    VARCHAR name
+    VARCHAR email UK
+    VARCHAR password
+  }
+  CATEGORIES {
+    NUMBER category_id PK
+    VARCHAR category_name UK
+  }
+  LOCATIONS {
+    NUMBER location_id PK
+    VARCHAR location_name UK
+    VARCHAR description
+  }
+  ITEMS {
+    NUMBER item_id PK
+    NUMBER user_id FK
+    NUMBER category_id FK
+    NUMBER location_id FK
+    VARCHAR item_name
+    VARCHAR item_type
+    VARCHAR status
+  }
+  CLAIMS {
+    NUMBER claim_id PK
+    NUMBER item_id FK
+    NUMBER user_id FK
+    VARCHAR claim_status
+    VARCHAR claim_message
+  }
+  AUDIT_LOGS {
+    NUMBER audit_id PK
+    VARCHAR table_name
+    NUMBER record_id
+    VARCHAR action_type
+    VARCHAR old_status
+    VARCHAR new_status
+  }
+    </pre>
+  </div>
+
+  <div id="schema" class="box" style="margin-top:40px">
+    <h1>Database Schema Diagram — FindIt</h1>
+    <pre class="mermaid">
+flowchart LR
+  USERS[(USERS<br/>PK user_id)]
+  ADMINS[(ADMINS<br/>PK admin_id)]
+  CAT[(CATEGORIES<br/>PK category_id)]
+  LOC[(LOCATIONS<br/>PK location_id)]
+  ITEMS[(ITEMS<br/>PK item_id)]
+  CLAIMS[(CLAIMS<br/>PK claim_id)]
+  AUDIT[(AUDIT_LOGS<br/>PK audit_id)]
+
+  USERS -->|user_id FK| ITEMS
+  CAT -->|category_id FK| ITEMS
+  LOC -->|location_id FK| ITEMS
+  USERS -->|user_id FK| CLAIMS
+  ITEMS -->|item_id FK| CLAIMS
+  ITEMS -.->|tracked| AUDIT
+  CLAIMS -.->|tracked| AUDIT
+  ADMINS -.->|reviews via PL/SQL| CLAIMS
+    </pre>
+  </div>
+
+  <div id="arch" class="box" style="margin-top:40px">
+    <h1>System Architecture — FindIt</h1>
+    <pre class="mermaid">
+flowchart TB
+  B[User / Admin Browser]
+  R[Laravel Routes]
+  MW[Middleware and Authentication]
+  C[Controllers]
+  M[Models]
+  S[FinditPlsqlService]
+  PDO[Custom PDO_OCI Connection]
+  PKG[Oracle PL/SQL Package findit_pkg]
+  DB[(Oracle Database Tables)]
+
+  B --> R --> MW --> C
+  C --> M
+  C --> S
+  M --> PDO
+  S --> PDO
+  PDO --> PKG
+  PKG --> DB
+  M --> DB
+    </pre>
+  </div>
+
+  <div id="workflow" class="box" style="margin-top:40px">
+    <h1>System Workflow — FindIt</h1>
+    <pre class="mermaid">
+flowchart TD
+  A[Visitor opens website] --> B[Browse / search items]
+  B --> C[Register or log in]
+  C --> D[Report lost or found item]
+  D --> E[(Oracle stores item)]
+  E --> F[Another user submits claim]
+  F --> G[Claim status = Pending]
+  G --> H[Admin reviews claim]
+  H --> I{Approve or Reject?}
+  I -->|Approve| J[Claim Approved · Item Claimed]
+  I -->|Reject| K[Claim Rejected]
+  J --> L[User checks final result]
+  K --> L
+    </pre>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#e8f1fb',
+        primaryTextColor: '#0f172a',
+        primaryBorderColor: '#1e40af',
+        lineColor: '#334155',
+        secondaryColor: '#f8fafc',
+        tertiaryColor: '#ffffff',
+        fontFamily: 'Calibri, Arial, sans-serif'
+      }
+    });
+  </script>
+</body>
+</html>

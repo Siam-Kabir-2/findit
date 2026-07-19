@@ -1,6 +1,6 @@
--- FINDIT - Insert Sample Data
+-- FindIt: sample data
 
--- USERS (10 records)
+-- Users
 INSERT INTO users (user_id, name, email, password, phone, address, created_at)
 VALUES (seq_users.NEXTVAL, 'John Smith', 'john.smith@university.edu', 'pass_john123', '555-0101', '123 Main St, Campus Apt 101', CURRENT_TIMESTAMP);
 
@@ -31,14 +31,14 @@ VALUES (seq_users.NEXTVAL, 'Amanda Brown', 'amanda.brown@university.edu', 'pass_
 INSERT INTO users (user_id, name, email, password, phone, address, created_at)
 VALUES (seq_users.NEXTVAL, 'Christopher Lee', 'christopher.lee@university.edu', 'pass_christopher707', '555-0110', '741 Spruce Rd, Dorm Room 102', CURRENT_TIMESTAMP);
 
--- ADMINS (2 records)
+-- Admins
 INSERT INTO admins (admin_id, name, email, password, created_at)
 VALUES (seq_admins.NEXTVAL, 'Admin User One', 'admin.one@university.edu', 'admin_pass_secure_001', CURRENT_TIMESTAMP);
 
 INSERT INTO admins (admin_id, name, email, password, created_at)
 VALUES (seq_admins.NEXTVAL, 'Admin User Two', 'admin.two@university.edu', 'admin_pass_secure_002', CURRENT_TIMESTAMP);
 
--- CATEGORIES (8 records)
+-- Categories
 INSERT INTO categories (category_id, category_name, created_at)
 VALUES (seq_categories.NEXTVAL, 'Electronics', CURRENT_TIMESTAMP);
 
@@ -63,7 +63,7 @@ VALUES (seq_categories.NEXTVAL, 'Clothing', CURRENT_TIMESTAMP);
 INSERT INTO categories (category_id, category_name, created_at)
 VALUES (seq_categories.NEXTVAL, 'Other', CURRENT_TIMESTAMP);
 
--- LOCATIONS (8 records)
+-- Locations
 INSERT INTO locations (location_id, location_name, description, created_at)
 VALUES (seq_locations.NEXTVAL, 'Main Library', 'Central campus library building', CURRENT_TIMESTAMP);
 
@@ -88,7 +88,7 @@ VALUES (seq_locations.NEXTVAL, 'Sports Complex', 'Gym and athletic facilities', 
 INSERT INTO locations (location_id, location_name, description, created_at)
 VALUES (seq_locations.NEXTVAL, 'Dorm Hall A', 'Residential building near campus entrance', CURRENT_TIMESTAMP);
 
--- ITEMS (20 records - LOST)
+-- Lost items
 INSERT INTO items (item_id, user_id, category_id, location_id, item_name, item_description, item_type, item_image, lost_or_found_date, status, created_at)
 VALUES (seq_items.NEXTVAL, 1, 1, 1, 'Dell Laptop', 'Silver Dell Inspiron 15 laptop, model 5570', 'LOST', 'laptop_001.jpg', TO_DATE('2026-06-15', 'YYYY-MM-DD'), 'PENDING', CURRENT_TIMESTAMP);
 
@@ -113,7 +113,7 @@ VALUES (seq_items.NEXTVAL, 7, 2, 5, 'Class Notes Folder', 'Red folder with biolo
 INSERT INTO items (item_id, user_id, category_id, location_id, item_name, item_description, item_type, item_image, lost_or_found_date, status, created_at)
 VALUES (seq_items.NEXTVAL, 8, 3, 6, 'Brown Leather Wallet', 'Leather bifold wallet with business cards', 'LOST', 'wallet_001.jpg', TO_DATE('2026-06-08', 'YYYY-MM-DD'), 'PENDING', CURRENT_TIMESTAMP);
 
--- ITEMS (FOUND)
+-- Found items
 INSERT INTO items (item_id, user_id, category_id, location_id, item_name, item_description, item_type, item_image, lost_or_found_date, status, created_at)
 VALUES (seq_items.NEXTVAL, 9, 1, 7, 'Samsung Galaxy Watch', 'Black smartwatch found in gym locker', 'FOUND', 'watch_001.jpg', TO_DATE('2026-06-17', 'YYYY-MM-DD'), 'PENDING', CURRENT_TIMESTAMP);
 
@@ -144,7 +144,7 @@ VALUES (seq_items.NEXTVAL, 7, 1, 6, 'iPad Air', 'Apple iPad Air in silver found 
 INSERT INTO items (item_id, user_id, category_id, location_id, item_name, item_description, item_type, item_image, lost_or_found_date, status, created_at)
 VALUES (seq_items.NEXTVAL, 8, 2, 8, 'Exam Papers', 'Stack of exam papers in folder', 'FOUND', 'papers_001.jpg', TO_DATE('2026-06-19', 'YYYY-MM-DD'), 'PENDING', CURRENT_TIMESTAMP);
 
--- CLAIMS (10 records)
+-- Claims
 INSERT INTO claims (claim_id, item_id, user_id, claim_message, proof_description, claim_status, created_at)
 VALUES (seq_claims.NEXTVAL, 2, 2, 'This is my iPhone 13 Pro', 'I can provide IMEI number and Apple ID', 'PENDING', CURRENT_TIMESTAMP);
 

@@ -12,22 +12,25 @@
         </div>
     </div>
     <div class="auth-form-wrap">
-        <form method="POST" action="{{ route('register.submit') }}" class="form-panel" style="max-width:30rem;">
+        <form method="POST" action="{{ route('register') }}" class="form-panel" style="max-width:30rem;">
             @csrf
             <h2 class="font-display" style="margin:0 0 1.25rem;">Create account</h2>
             <div class="form-grid">
                 <div>
                     <label for="name">Full name</label>
-                    <input id="name" name="name" value="{{ old('name') }}" required autocomplete="name">
+                    <input id="name" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus class="{{ $errors->has('name') ? 'is-invalid' : '' }}">
+                    <x-field-error name="name" />
                 </div>
                 <div>
                     <label for="email">Email</label>
-                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email">
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="{{ $errors->has('email') ? 'is-invalid' : '' }}">
+                    <x-field-error name="email" />
                 </div>
                 <div class="form-grid two">
                     <div>
                         <label for="password">Password</label>
-                        <input id="password" type="password" name="password" required autocomplete="new-password">
+                        <input id="password" type="password" name="password" required autocomplete="new-password" class="{{ $errors->has('password') ? 'is-invalid' : '' }}">
+                        <x-field-error name="password" />
                     </div>
                     <div>
                         <label for="password_confirmation">Confirm</label>
@@ -35,11 +38,11 @@
                     </div>
                 </div>
                 <div>
-                    <label for="phone">Phone</label>
+                    <label for="phone">Phone <span class="meta">(optional)</span></label>
                     <input id="phone" name="phone" value="{{ old('phone') }}" autocomplete="tel">
                 </div>
                 <div>
-                    <label for="address">Address</label>
+                    <label for="address">Address <span class="meta">(optional)</span></label>
                     <input id="address" name="address" value="{{ old('address') }}" autocomplete="street-address">
                 </div>
                 <button class="btn btn-primary" type="submit">Create account</button>

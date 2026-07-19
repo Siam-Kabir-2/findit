@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 
 abstract class Controller
 {
+    use AuthorizesRequests;
+
     protected function attemptFinditLogin(string $guard, Authenticatable $user, string $password): bool
     {
         $stored = (string) $user->getAuthPassword();

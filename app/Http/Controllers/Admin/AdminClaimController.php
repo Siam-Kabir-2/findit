@@ -66,7 +66,7 @@ class AdminClaimController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
 
-        return back()->with('success', 'Claim approved via PL/SQL. Item marked CLAIMED.');
+        return back()->with('success', 'Claim approved. The item is now marked as claimed.');
     }
 
     public function reject(int $id): RedirectResponse
@@ -79,6 +79,6 @@ class AdminClaimController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
 
-        return back()->with('success', 'Claim rejected via PL/SQL.');
+        return back()->with('success', 'The claim has been rejected.');
     }
 }

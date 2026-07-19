@@ -30,6 +30,6 @@ class AdminUserController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
 
-        return back()->with('success', 'User deleted.');
+        return back()->with('success', 'User removed.');
     }
 }

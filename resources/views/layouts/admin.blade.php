@@ -34,12 +34,7 @@
             </form>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success" role="status">{{ session('success') }}</div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-error" role="alert">{{ $errors->first() }}</div>
-        @endif
+        @include('partials.flash')
 
         @yield('content')
     </div>

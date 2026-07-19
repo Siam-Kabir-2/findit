@@ -11,7 +11,7 @@ class Claim extends Model
 
     protected $primaryKey = 'claim_id';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
     public $timestamps = false;
 

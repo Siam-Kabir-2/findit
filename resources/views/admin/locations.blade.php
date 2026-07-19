@@ -16,7 +16,7 @@
             <label for="description">Description</label>
             <textarea id="description" name="description">{{ old('description') }}</textarea>
         </div>
-        <button class="btn btn-primary" type="submit">Add via PL/SQL</button>
+        <button class="btn btn-primary" type="submit">Add location</button>
     </form>
 
     <div class="panel table-wrap">

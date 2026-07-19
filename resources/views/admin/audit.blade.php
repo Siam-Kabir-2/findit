@@ -4,7 +4,7 @@
 @section('heading', 'Audit Logs')
 
 @section('content')
-<p class="meta" style="margin-bottom:1rem;">Populated by Oracle triggers on ITEMS and CLAIMS.</p>
+<p class="meta" style="margin-bottom:1rem;">Populated by MySQL triggers on ITEMS and CLAIMS.</p>
 <div class="panel table-wrap">
     <table class="data">
         <thead>

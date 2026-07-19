@@ -11,7 +11,7 @@ class Location extends Model
 
     protected $primaryKey = 'location_id';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
     public $timestamps = false;
 

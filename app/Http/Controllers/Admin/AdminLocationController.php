@@ -50,6 +50,6 @@ class AdminLocationController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
 
-        return back()->with('success', 'Location deleted.');
+        return back()->with('success', 'Location removed.');
     }
 }

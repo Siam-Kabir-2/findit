@@ -10,7 +10,7 @@ class Admin extends Authenticatable
 
     protected $primaryKey = 'admin_id';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
     protected $keyType = 'int';
 

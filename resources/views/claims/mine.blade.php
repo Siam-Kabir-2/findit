@@ -9,12 +9,12 @@
             <div>
                 <span class="eyebrow">Verification</span>
                 <h2>My claims</h2>
-                <p>Track claim requests processed by admins via PL/SQL.</p>
+                <p>Track claim requests processed by admins.</p>
             </div>
             <a href="{{ route('items.index') }}" class="btn btn-ghost">Browse board</a>
         </div>
 
-        @if(count($claims))
+        @if($claims->count())
             <div class="panel table-wrap">
                 <table class="data">
                     <thead>
@@ -29,10 +29,10 @@
                     <tbody>
                     @foreach($claims as $claim)
                         <tr>
-                            <td><a href="{{ route('items.show', $claim->item_id) }}">{{ $claim->item_name }}</a></td>
-                            <td>{{ $claim->item_type }}</td>
+                            <td><a href="{{ route('items.show', $claim->item_id) }}">{{ $claim->item->item_name }}</a></td>
+                            <td>{{ $claim->item->item_type }}</td>
                             <td><span class="badge badge-{{ strtolower($claim->claim_status) }}">{{ $claim->claim_status }}</span></td>
-                            <td><span class="badge badge-{{ strtolower($claim->item_status) }}">{{ $claim->item_status }}</span></td>
+                            <td><span class="badge badge-{{ strtolower($claim->item->status) }}">{{ $claim->item->status }}</span></td>
                             <td>{{ $claim->claim_message ?: '—' }}</td>
                         </tr>
                     @endforeach

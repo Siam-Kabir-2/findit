@@ -8,40 +8,42 @@ use App\Http\Controllers\Admin\AdminItemController;
 use App\Http\Controllers\Admin\AdminLocationController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Auth\AdminAuthController;
-use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\ClaimController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\PreferenceController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [UserAuthController::class, 'login'])->name('login.submit');
-Route::get('/register', [UserAuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [UserAuthController::class, 'register'])->name('register.submit');
-Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
 Route::get('/items', [ItemController::class, 'index'])->name('items.index');
+Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show')->whereNumber('item');
 
-Route::middleware('auth.user')->group(function () {
+Route::post('/preferences/board-view', [PreferenceController::class, 'updateBoardView'])->name('preferences.board-view');
+
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
     Route::post('/items', [ItemController::class, 'store'])->name('items.store');
     Route::get('/my-items', [ItemController::class, 'myItems'])->name('items.mine');
-    Route::delete('/items/{id}', [ItemController::class, 'destroy'])->name('items.destroy')->whereNumber('id');
+    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit')->whereNumber('item');
+    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update')->whereNumber('item');
+    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy')->whereNumber('item');
 
-    Route::post('/items/{id}/claims', [ClaimController::class, 'store'])->name('claims.store')->whereNumber('id');
+    Route::post('/items/{item}/claims', [ClaimController::class, 'store'])->name('claims.store')->whereNumber('item');
     Route::get('/my-claims', [ClaimController::class, 'myClaims'])->name('claims.mine');
 });
-
-Route::get('/items/{id}', [ItemController::class, 'show'])->name('items.show')->whereNumber('id');
 
 Route::prefix('admin')->middleware('auth.admin')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
@@ -67,3 +69,5 @@ Route::prefix('admin')->middleware('auth.admin')->group(function () {
 
     Route::get('/audit', [AdminAuditController::class, 'index'])->name('admin.audit.index');
 });
+
+require __DIR__.'/auth.php';

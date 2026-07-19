@@ -1,7 +1,6 @@
+-- FindIt: create tables and sequences
 
--- FINDIT - Create Tables
-
--- Drop existing tables
+-- Drop old tables if they exist
 BEGIN
   EXECUTE IMMEDIATE 'DROP TABLE audit_logs';
 EXCEPTION WHEN OTHERS THEN NULL;
@@ -44,7 +43,7 @@ EXCEPTION WHEN OTHERS THEN NULL;
 END;
 /
 
--- Drop existing sequences
+-- Drop old sequences if they exist
 BEGIN
   EXECUTE IMMEDIATE 'DROP SEQUENCE seq_users';
 EXCEPTION WHEN OTHERS THEN NULL;
@@ -87,7 +86,7 @@ EXCEPTION WHEN OTHERS THEN NULL;
 END;
 /
 
--- USERS table
+-- Users
 CREATE TABLE users (
   user_id       NUMBER,
   name          VARCHAR2(100) NOT NULL,
@@ -103,7 +102,7 @@ CREATE TABLE users (
 
 CREATE SEQUENCE seq_users START WITH 1 INCREMENT BY 1;
 
--- ADMINS table
+-- Admins
 CREATE TABLE admins (
   admin_id      NUMBER,
   name          VARCHAR2(100) NOT NULL,
@@ -117,7 +116,7 @@ CREATE TABLE admins (
 
 CREATE SEQUENCE seq_admins START WITH 1 INCREMENT BY 1;
 
--- CATEGORIES table
+-- Categories
 CREATE TABLE categories (
   category_id   NUMBER,
   category_name VARCHAR2(100) NOT NULL,
@@ -128,7 +127,7 @@ CREATE TABLE categories (
 
 CREATE SEQUENCE seq_categories START WITH 1 INCREMENT BY 1;
 
--- LOCATIONS table
+-- Locations
 CREATE TABLE locations (
   location_id   NUMBER,
   location_name VARCHAR2(100) NOT NULL,
@@ -140,7 +139,7 @@ CREATE TABLE locations (
 
 CREATE SEQUENCE seq_locations START WITH 1 INCREMENT BY 1;
 
--- ITEMS table
+-- Items
 CREATE TABLE items (
   item_id           NUMBER,
   user_id           NUMBER NOT NULL,
@@ -163,7 +162,7 @@ CREATE TABLE items (
 
 CREATE SEQUENCE seq_items START WITH 1 INCREMENT BY 1;
 
--- CLAIMS table
+-- Claims
 CREATE TABLE claims (
   claim_id          NUMBER,
   item_id           NUMBER NOT NULL,
@@ -180,7 +179,7 @@ CREATE TABLE claims (
 
 CREATE SEQUENCE seq_claims START WITH 1 INCREMENT BY 1;
 
--- AUDIT_LOGS table
+-- Audit logs
 CREATE TABLE audit_logs (
   audit_id   NUMBER,
   table_name VARCHAR2(50) NOT NULL,

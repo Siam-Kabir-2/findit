@@ -53,6 +53,6 @@ class AdminItemController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
 
-        return back()->with('success', 'Item deleted.');
+        return back()->with('success', 'Item removed.');
     }
 }

@@ -10,7 +10,7 @@ class AuditLog extends Model
 
     protected $primaryKey = 'audit_id';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
     public $timestamps = false;
 
