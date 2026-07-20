@@ -5,7 +5,7 @@
 @section('content')
 <section class="section">
     <div class="container">
-        <div class="page-header">
+        <div class="page-header reveal">
             <div>
                 <span class="eyebrow">Verification</span>
                 <h2>My claims</h2>
@@ -15,7 +15,7 @@
         </div>
 
         @if($claims->count())
-            <div class="panel table-wrap">
+            <div class="panel table-wrap reveal">
                 <table class="data">
                     <thead>
                     <tr>
@@ -29,21 +29,21 @@
                     <tbody>
                     @foreach($claims as $claim)
                         <tr>
-                            <td><a href="{{ route('items.show', $claim->item_id) }}">{{ $claim->item->item_name }}</a></td>
-                            <td>{{ $claim->item->item_type }}</td>
+                            <td><a href="{{ route('items.show', $claim->item_id) }}" class="link-accent" style="font-weight:600;">{{ $claim->item->item_name }}</a></td>
+                            <td><span class="badge {{ strtolower($claim->item->item_type)==='lost' ? 'badge-lost' : 'badge-found' }}">{{ $claim->item->item_type }}</span></td>
                             <td><span class="badge badge-{{ strtolower($claim->claim_status) }}">{{ $claim->claim_status }}</span></td>
                             <td><span class="badge badge-{{ strtolower($claim->item->status) }}">{{ $claim->item->status }}</span></td>
-                            <td>{{ $claim->claim_message ?: '—' }}</td>
+                            <td style="color:var(--ink-soft);">{{ $claim->claim_message ?: '—' }}</td>
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
             </div>
         @else
-            <div class="empty-state">
+            <div class="empty-state reveal">
                 <h3>No claims yet</h3>
                 <p>Find an item on the board and submit proof to start a claim.</p>
-                <a href="{{ route('items.index') }}" class="btn btn-accent btn-sm">Browse items</a>
+                <a href="{{ route('items.index') }}" class="btn btn-accent btn-sm" style="margin-top:0.5rem;">Browse items</a>
             </div>
         @endif
     </div>

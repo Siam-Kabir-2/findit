@@ -43,16 +43,34 @@ INSERT INTO categories (category_name) VALUES
 ('Clothing'),
 ('Other');
 
--- Locations
-INSERT INTO locations (location_name, description) VALUES
-('Main Library', 'Central campus library building'),
-('Student Cafeteria', 'Main dining hall in Student Center'),
-('Computer Lab A', 'Technology center, Building 5'),
-('Parking Lot B', 'North campus parking area'),
-('Student Union', 'Main social hub and event center'),
-('Science Building', 'Physics and Chemistry labs'),
-('Sports Complex', 'Gym and athletic facilities'),
-('Dorm Hall A', 'Residential building near campus entrance');
+-- Locations (KUET Khulna — real campus spots with map pins)
+INSERT INTO locations (location_name, description, latitude, longitude) VALUES
+('Central Library', 'KUET Central Library', 22.9005500, 89.5029500),
+('Central Cafeteria', 'Student Welfare Center cafeteria', 22.8998500, 89.5017500),
+('Central Computer Center', 'Central Computer Center (CCC)', 22.9009000, 89.5015500),
+('Main Gate (Fulbarigate)', 'Main campus entrance area', 22.8987000, 89.5038000),
+('Student Welfare Center', 'SWC — cafeteria, indoor games, open stage', 22.8999500, 89.5012500),
+('Academic Building', 'Main academic / classroom buildings', 22.9011500, 89.5024500),
+('Playground', 'Central playground and sports field', 22.8985500, 89.5021500),
+('Fazlul Haque Hall', 'Residential hall', 22.9018500, 89.5018500),
+('Central Mosque', 'KUET Central Mosque', 22.9002500, 89.5010500),
+('Administrative Building', 'Admin / registrar offices', 22.9007000, 89.5031500),
+('Medical Center', 'Campus medical center', 22.8994000, 89.5025500),
+('Gymnasium & Swimming Pool', 'Gym and swimming pool complex', 22.8989500, 89.5015500),
+('Open Stage (Mukto Mancha)', 'Open stage at Student Welfare Center', 22.8997000, 89.5014000),
+('Lalan Shah Hall', 'Residential hall', 22.9021000, 89.5023500),
+('Khan Jahan Ali Hall', 'Residential hall', 22.9023500, 89.5015500),
+('Dr. M.A. Rashid Hall', 'Residential hall', 22.9015500, 89.5009500),
+('Rokeya Hall', 'Female residential hall', 22.9019500, 89.5035500),
+('Amar Ekushey Hall', 'Residential hall', 22.9024500, 89.5030500),
+('Bangabandhu Hall', 'Bangabandhu Sheikh Mujibur Rahman Hall', 22.9027000, 89.5025500),
+('Shaheed Smriti Hall', 'Residential hall', 22.9012500, 89.5040500),
+('New Academic Building', 'Newer academic classroom block', 22.9014500, 89.5011500),
+('EEE Building', 'Electrical & Electronic Engineering dept.', 22.9008500, 89.5026500),
+('CSE Building', 'Computer Science & Engineering dept.', 22.9010500, 89.5020500),
+('Civil Building', 'Civil Engineering department', 22.9003500, 89.5022500),
+('Mechanical Building', 'Mechanical Engineering department', 22.9001500, 89.5030500),
+('Transport / Bus Stand', 'Campus transport waiting area', 22.8988500, 89.5033500);
 
 -- Lost items
 INSERT INTO items (user_id, category_id, location_id, item_name, item_description, item_type, item_image, lost_or_found_date, status) VALUES

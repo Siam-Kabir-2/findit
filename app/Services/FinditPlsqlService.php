@@ -206,12 +206,18 @@ class FinditPlsqlService
         }
     }
 
-    public function addLocation(string $name, ?string $description): int
+    public function addLocation(string $name, ?string $description, ?float $latitude = null, ?float $longitude = null): int
     {
+        if ($latitude === null || $longitude === null) {
+            [$latitude, $longitude] = app(CampusGeocoder::class)->resolve($name);
+        }
+
         try {
             return (int) DB::table('locations')->insertGetId([
                 'location_name' => $name,
                 'description' => $description,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
             ], 'location_id');
         } catch (Throwable $e) {
             if ($this->isDuplicateKey($e)) {

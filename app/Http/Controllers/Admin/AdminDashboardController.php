@@ -36,12 +36,9 @@ class AdminDashboardController extends Controller
         ");
         $recentItems = array_slice($recentItems, 0, 6);
 
-        $recentAudit = DB::select("
-            SELECT audit_id, table_name, record_id, action_type, old_status, new_status, action_by, action_date
-            FROM audit_logs
-            ORDER BY action_date DESC
-        ");
-        $recentAudit = array_slice($recentAudit, 0, 8);
+        $recentAudit = collect(AdminAuditController::fetchEnrichedLogs(8))
+            ->map(fn ($row) => AdminAuditController::presentEvent($row))
+            ->all();
 
         return view('admin.dashboard', compact('stats', 'recentClaims', 'recentItems', 'recentAudit'));
     }

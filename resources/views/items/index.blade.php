@@ -69,13 +69,15 @@
                 </select>
             </div>
             <div>
-                <label for="location_id">Location</label>
-                <select id="location_id" name="location_id">
-                    <option value="">All</option>
-                    @foreach($locations as $location)
-                        <option value="{{ $location->location_id }}" @selected((string)request('location_id')===(string)$location->location_id)>{{ $location->location_name }}</option>
-                    @endforeach
-                </select>
+                @include('partials.location-select', [
+                    'locations' => $locations,
+                    'selected' => request('location_id'),
+                    'label' => 'Location',
+                    'emptyLabel' => 'All KUET spots',
+                    'allowEmpty' => true,
+                    'required' => false,
+                    'showPreview' => false,
+                ])
             </div>
             <button class="btn btn-primary" type="submit">Apply</button>
         </form>

@@ -30,6 +30,8 @@ return new class extends Migration
             $table->increments('location_id');
             $table->string('location_name', 100)->unique();
             $table->string('description', 500)->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->timestamp('created_at')->useCurrent();
         });
 

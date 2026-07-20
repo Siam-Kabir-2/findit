@@ -59,6 +59,10 @@ class ItemController extends Controller
     {
         $item->load(['user', 'category', 'location']);
 
+        if ($item->location) {
+            $item->location->ensureCoordinates();
+        }
+
         $recent = collect(json_decode($request->cookie('findit_recent_items', '[]'), true) ?: []);
         $recent = $recent->reject(fn ($id) => (int) $id === (int) $item->item_id)->prepend($item->item_id)->take(8)->values();
         Cookie::queue(Cookie::make('findit_recent_items', $recent->toJson(), 60 * 24 * 30, '/', null, false, false, false, 'lax'));

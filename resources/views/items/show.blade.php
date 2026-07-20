@@ -12,21 +12,28 @@
         </div>
 
         <div class="detail-layout">
-            <div class="detail-media">
+            <div class="detail-media {{ empty($item->item_image) ? 'is-empty' : '' }}">
                 @if(!empty($item->item_image))
                     <img src="{{ asset('storage/'.$item->item_image) }}" alt="{{ $item->item_name }}">
+                @else
+                    <div class="detail-media-empty">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>No photo uploaded</span>
+                    </div>
                 @endif
             </div>
-            <div class="panel">
-                <div class="badge-row" style="margin-bottom:0.75rem;">
+
+            <div class="detail-info panel">
+                <div class="badge-row">
                     <span class="badge {{ strtolower($item->item_type)==='lost' ? 'badge-lost' : 'badge-found' }}">{{ $item->item_type }}</span>
                     <span class="badge badge-{{ strtolower($item->status) }}">{{ $item->status }}</span>
                 </div>
-                <h1 class="page-title" style="margin-bottom:0.35rem;">{{ $item->item_name }}</h1>
-                <p class="meta">{{ $item->category->category_name }} · {{ $item->location->location_name }}</p>
-                <p style="margin:1rem 0;line-height:1.65;color:var(--ink-soft);">{{ $item->item_description ?: 'No description provided.' }}</p>
 
-                <dl class="meta-grid">
+                <h1 class="page-title">{{ $item->item_name }}</h1>
+                <p class="detail-kicker">{{ $item->category->category_name }} · {{ $item->location->location_name }}</p>
+                <p class="detail-desc">{{ $item->item_description ?: 'No description provided.' }}</p>
+
+                <dl class="meta-grid detail-meta">
                     <div class="meta-row">
                         <dt>Date</dt>
                         <dd>{{ \Illuminate\Support\Str::of($item->lost_or_found_date)->before(' ') }}</dd>
@@ -39,19 +46,51 @@
                         <dt>Contact</dt>
                         <dd>{{ $item->user->email }}</dd>
                     </div>
+                    <div class="meta-row">
+                        <dt>Campus spot</dt>
+                        <dd>{{ $item->location->location_name }}</dd>
+                    </div>
                 </dl>
 
                 @can('update', $item)
-                    <div class="actions-inline" style="margin-bottom:1rem;">
+                    <div class="actions-inline">
                         <a href="{{ route('items.edit', $item) }}" class="btn btn-ghost btn-sm">Edit item</a>
                     </div>
                 @endcan
 
                 @auth
-                    @if((int) auth()->id() !== (int) $item->user_id && !in_array($item->status, ['CLAIMED','RETURNED','REJECTED'], true))
-                        <hr class="divider">
-                        <h3 class="font-display" style="margin:0 0 0.75rem;">Submit a claim</h3>
-                        <p class="meta" style="margin-bottom:0.85rem;">Include proof details so admins can verify ownership.</p>
+                    @if((int) auth()->id() === (int) $item->user_id)
+                        <p class="meta detail-note">This is your posting.</p>
+                        <a href="{{ route('items.mine') }}" class="btn btn-ghost btn-sm">Manage my items</a>
+                    @elseif(in_array($item->status, ['CLAIMED','RETURNED','REJECTED'], true))
+                        <p class="meta detail-note">This item is no longer open for claims.</p>
+                    @endif
+                @else
+                    <p class="meta detail-note"><a href="{{ route('login') }}" class="link-accent">Login</a> to submit a claim.</p>
+                @endauth
+            </div>
+        </div>
+
+        <div class="detail-secondary">
+            <div class="panel detail-map-panel">
+                <div class="panel-title">
+                    <div>
+                        <h3>Where on campus</h3>
+                        <p class="meta" style="margin:0.2rem 0 0;">Pinned to KUET, Khulna · {{ $item->location->location_name }}</p>
+                    </div>
+                </div>
+                @include('partials.location-map', ['location' => $item->location, 'height' => '280px', 'zoom' => 17])
+            </div>
+
+            @auth
+                @if((int) auth()->id() !== (int) $item->user_id && !in_array($item->status, ['CLAIMED','RETURNED','REJECTED'], true))
+                    <div class="panel detail-claim-panel">
+                        <div class="panel-title">
+                            <div>
+                                <h3>Submit a claim</h3>
+                                <p class="meta" style="margin:0.2rem 0 0;">Include proof so admins can verify ownership.</p>
+                            </div>
+                        </div>
                         <form method="POST" action="{{ route('claims.store', $item) }}" class="form-grid">
                             @csrf
                             <div>
@@ -64,16 +103,9 @@
                             </div>
                             <button class="btn btn-accent" type="submit">Submit claim</button>
                         </form>
-                    @elseif((int) auth()->id() === (int) $item->user_id)
-                        <p class="meta" style="margin-top:1rem;">This is your posting.</p>
-                        <a href="{{ route('items.mine') }}" class="btn btn-ghost btn-sm" style="margin-top:0.75rem;">Manage my items</a>
-                    @else
-                        <p class="meta" style="margin-top:1rem;">This item is no longer open for claims.</p>
-                    @endif
-                @else
-                    <p class="meta" style="margin-top:1rem;"><a href="{{ route('login') }}" class="link-accent">Login</a> to submit a claim.</p>
-                @endauth
-            </div>
+                    </div>
+                @endif
+            @endauth
         </div>
     </div>
 </section>

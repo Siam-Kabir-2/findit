@@ -5,12 +5,12 @@
 
 @section('content')
 <div class="stat-grid">
-    <a href="{{ route('admin.users.index') }}" class="stat clickable"><strong>{{ $stats['total_users'] }}</strong><span>Users</span></a>
-    <a href="{{ route('admin.items.index') }}" class="stat clickable"><strong>{{ $stats['total_items'] }}</strong><span>Items</span></a>
-    <a href="{{ route('admin.items.index') }}" class="stat clickable"><strong>{{ $stats['lost_items'] }}</strong><span>Lost</span></a>
-    <a href="{{ route('admin.items.index') }}" class="stat clickable"><strong>{{ $stats['found_items'] }}</strong><span>Found</span></a>
-    <a href="{{ route('admin.claims.index', ['status' => 'PENDING']) }}" class="stat clickable"><strong>{{ $stats['pending_claims'] }}</strong><span>Pending claims</span></a>
-    <a href="{{ route('admin.claims.index', ['status' => 'APPROVED']) }}" class="stat clickable"><strong>{{ $stats['approved_claims'] }}</strong><span>Approved claims</span></a>
+    <a href="{{ route('admin.users.index') }}" class="stat clickable stat-users"><strong>{{ $stats['total_users'] }}</strong><span>Users</span></a>
+    <a href="{{ route('admin.items.index') }}" class="stat clickable stat-items"><strong>{{ $stats['total_items'] }}</strong><span>Items</span></a>
+    <a href="{{ route('admin.items.index') }}" class="stat clickable stat-lost"><strong>{{ $stats['lost_items'] }}</strong><span>Lost</span></a>
+    <a href="{{ route('admin.items.index') }}" class="stat clickable stat-found"><strong>{{ $stats['found_items'] }}</strong><span>Found</span></a>
+    <a href="{{ route('admin.claims.index', ['status' => 'PENDING']) }}" class="stat clickable stat-pending"><strong>{{ $stats['pending_claims'] }}</strong><span>Pending claims</span></a>
+    <a href="{{ route('admin.claims.index', ['status' => 'APPROVED']) }}" class="stat clickable stat-approved"><strong>{{ $stats['approved_claims'] }}</strong><span>Approved claims</span></a>
 </div>
 
 <div class="quick-grid">
@@ -78,35 +78,34 @@
 
 <div class="panel" style="margin-top:1rem;">
     <div class="panel-title">
-        <h3>Latest audit events</h3>
-        <a href="{{ route('admin.audit.index') }}" class="btn btn-ghost btn-sm">Full log</a>
+        <h3>Latest activity</h3>
+        <a href="{{ route('admin.audit.index') }}" class="btn btn-ghost btn-sm">Full timeline</a>
     </div>
-    <div class="table-wrap">
-        <table class="data">
-            <thead>
-            <tr>
-                <th>Table</th>
-                <th>Record</th>
-                <th>Action</th>
-                <th>Change</th>
-                <th>By</th>
-            </tr>
-            </thead>
-            <tbody>
-            @forelse($recentAudit as $log)
-                <tr>
-                    <td>{{ $log->table_name }}</td>
-                    <td>{{ $log->record_id }}</td>
-                    <td>{{ $log->action_type }}</td>
-                    <td>{{ $log->old_status ?: '—' }} → {{ $log->new_status ?: '—' }}</td>
-                    <td>{{ $log->action_by }}</td>
-                </tr>
-            @empty
-                <tr><td colspan="5" class="empty">No audit events yet.</td></tr>
-            @endforelse
-            </tbody>
-        </table>
+    <div class="activity-list">
+        @forelse($recentAudit as $event)
+            <div class="activity-item">
+                <div>
+                    <strong>{{ $event->headline }}</strong>
+                    <div class="meta">{{ $event->detail }}</div>
+                    @if($event->status_changed)
+                        <div class="badge-row" style="margin-top:0.35rem;">
+                            <span class="badge badge-{{ strtolower($event->old_status) }}">{{ $event->old_status }}</span>
+                            <span class="meta">→</span>
+                            <span class="badge badge-{{ strtolower($event->new_status) }}">{{ $event->new_status }}</span>
+                        </div>
+                    @endif
+                </div>
+                <div style="text-align:right;">
+                    <span class="badge badge-{{ $event->entity === 'claim' ? 'claimed' : 'found' }}">{{ $event->entity === 'claim' ? 'Claim' : 'Item' }}</span>
+                    <div class="meta" style="margin-top:0.35rem;">{{ $event->when_label }}</div>
+                </div>
+            </div>
+        @empty
+            <div class="empty-state">
+                <h3>No activity yet</h3>
+                <p>Item and claim changes will show up here.</p>
+            </div>
+        @endforelse
     </div>
-    <p class="meta" style="margin-top:0.85rem;">Stats from service queries · audit from MySQL triggers</p>
 </div>
 @endsection

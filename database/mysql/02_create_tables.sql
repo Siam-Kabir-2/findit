@@ -56,6 +56,8 @@ CREATE TABLE locations (
   location_id   INT AUTO_INCREMENT,
   location_name VARCHAR(100) NOT NULL,
   description   VARCHAR(500),
+  latitude      DECIMAL(10,7) NULL,
+  longitude     DECIMAL(10,7) NULL,
   created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CONSTRAINT pk_locations PRIMARY KEY (location_id),
   CONSTRAINT uk_locations_name UNIQUE (location_name)
